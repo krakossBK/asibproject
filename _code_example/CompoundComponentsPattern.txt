@@ -1,0 +1,269 @@
+3. Compound Components Pattern
+Составные компоненты (Compound Components)— это компоненты, которые имеют общее состояние и работают вместе для достижения общей цели. Примером могут служить HTML-элементы select и option. В сочетании вместе они создают выпадающее меню, но сами по себе они мало что делают.
+
+Паттерн Compound Components используется в популярных библиотеках пользовательского интерфейса React, например: Ant Design и Material UI. Ниже представлена реализация компонента Menu в Material UI.
+
+import * as React from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+
+export default function MaterialMenu() {
+  return (
+ <div>
+ <Button> Menu </Button>
+ <Menu>
+ <MenuItem>Profile</MenuItem>
+ <MenuItem>My account</MenuItem>
+ <MenuItem>Logout</MenuItem>
+ </Menu>
+ </div>
+  );
+}
+
+
+import * as React from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+ 
+export default function MaterialMenu() {
+  return (
+    <div>
+      <Button> Menu </Button>
+      <Menu>
+        <MenuItem>Profile</MenuItem>
+        <MenuItem>My account</MenuItem>
+        <MenuItem>Logout</MenuItem>
+      </Menu>
+    </div>
+  );
+}
+Без составных компонентов нам пришлось бы передавать props родительскому компоненту, а затем этот родительский компонент будет передавать данные дочерним компонентам.
+
+<Menu items={['Profile','My account', 'Logout']} />
+1
+<Menu items={['Profile','My account', 'Logout']} />
+Вышеприведенное выглядит просто, но у нас начинаются проблемы с передачей дополнительных props дочернему компоненту. Например, представьте, что нам нужен выбранный по умолчанию пункт меню.
+
+<Menu items={['Profile','My account', 'Logout']} defaultSelected={1} />
+1
+<Menu items={['Profile','My account', 'Logout']} defaultSelected={1} />
+По мере поступления новых требований компонент становится слишком сложным и непригодным для использования. Паттерн Сompound Сomponent обеспечивает более чистый способ достижения необходимого результата. Существует два способа создания компонента React с использованием паттерна Сompound Сomponent: React.cloneElement и React Context. Я буду использовать подход React Context для примера ниже.
+
+import {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  useContext
+} from "react";
+import "./styles.css";
+const MenuContext = createContext();
+const Menu = ({ children, defaultSelected }) => {
+  const [selectedItem, setSelectedItem] = useState(defaultSelected);
+  const toggleSelectedItem = useCallback(
+ (item) => {
+ if (item !== selectedItem) {
+ setSelectedItem(item);
+ return;
+ }
+ selectedItem("");
+ },
+ [selectedItem, setSelectedItem]
+  );
+  const value = useMemo(
+ () => ({
+ toggleSelectedItem,
+ selectedItem
+ }),
+ [toggleSelectedItem, selectedItem]
+  );
+  return (
+ <MenuContext.Provider value={value}>
+ <menu className="menu">{children}</menu>
+ </MenuContext.Provider>
+  );
+};
+
+
+import {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  useContext
+} from "react";
+import "./styles.css";
+const MenuContext = createContext();
+const Menu = ({ children, defaultSelected }) => {
+  const [selectedItem, setSelectedItem] = useState(defaultSelected);
+  const toggleSelectedItem = useCallback(
+    (item) => {
+      if (item !== selectedItem) {
+        setSelectedItem(item);
+        return;
+      }
+      selectedItem("");
+    },
+    [selectedItem, setSelectedItem]
+  );
+  const value = useMemo(
+    () => ({
+      toggleSelectedItem,
+      selectedItem
+    }),
+    [toggleSelectedItem, selectedItem]
+  );
+  return (
+    <MenuContext.Provider value={value}>
+      <menu className="menu">{children}</menu>
+    </MenuContext.Provider>
+  );
+};
+Мы создали объект контекста MenuContext для компонента Menu с помощью функции createContext, предоставляемой React Context API. Это сохранит общее состояние для компонентов Menu и MenuItem. Мы также создали состояние для выбранного пункта меню. Это позволит нам обновить контекст аналогично тому, что мы сделали в Provider Pattern, поскольку Context API по своей природе не имеет состояния.
+
+Следующим шагом является создание компонента MenuItem.
+
+const useMenuContext = () => {
+  const context = useContext(MenuContext);
+  if (!context) {
+ throw new Error(
+ "Menu item component cannot be used outside the Menu component."
+ );
+  }
+  return context;
+};
+const MenuItem = ({ value, children }) => {
+  const { toggleSelectedItem, selectedItem } = useMenuContext();
+  return (
+ <button
+ onClick={() => toggleSelectedItem(value)}
+ id={`${value}-menu-item`}
+ className={`menu__item ${selectedItem === value && "active"}`}
+ >
+ {children}
+ </button>
+  );
+};
+
+
+const useMenuContext = () => {
+  const context = useContext(MenuContext);
+  if (!context) {
+    throw new Error(
+      "Menu item component cannot be used outside the Menu component."
+    );
+  }
+  return context;
+};
+const MenuItem = ({ value, children }) => {
+  const { toggleSelectedItem, selectedItem } = useMenuContext();
+  return (
+    <button
+      onClick={() => toggleSelectedItem(value)}
+      id={`${value}-menu-item`}
+      className={`menu__item ${selectedItem === value && "active"}`}
+    >
+      {children}
+    </button>
+  );
+};
+Первое, что здесь делается, — это создание пользовательского хука useMenuContext для проверки того, используется ли MenuItem вне компонента Menu, и выдачи ошибки, если это произойдет. После этого мы создаем MenuItem, используя общее состояние с компонентом Menu, чтобы определить, какой стиль применить к выбранному MenuItem, и изменить выбранный элемент при клике на элемент меню.
+
+Подводя итог, мы соединяем эти компоненты вместе в компоненте приложения.
+
+export default function App() {
+  return (
+ <Menu defaultSelected="My account">
+ <MenuItem value="Profile">Profile</MenuItem>
+ <MenuItem value="My account">My account</MenuItem>
+ <MenuItem value="Logout">Logout</MenuItem>
+ </Menu>
+  );
+}
+
+
+export default function App() {
+  return (
+      <Menu defaultSelected="My account">
+        <MenuItem value="Profile">Profile</MenuItem>
+        <MenuItem value="My account">My account</MenuItem>
+        <MenuItem value="Logout">Logout</MenuItem>
+      </Menu>
+  );
+}
+Вы можете просмотреть полный код приложения здесь.
+
+App.js
+import {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  useContext
+} from "react";
+import "./styles.css";
+
+const MenuContext = createContext();
+
+const Menu = ({ children, defaultSelected }) => {
+  const [selectedItem, setSelectedItem] = useState(defaultSelected);
+  const toggleSelectedItem = useCallback(
+    (item) => {
+      if (item !== selectedItem) {
+        setSelectedItem(item);
+        return;
+      }
+      selectedItem("");
+    },
+    [selectedItem, setSelectedItem]
+  );
+
+  const value = useMemo(
+    () => ({
+      toggleSelectedItem,
+      selectedItem
+    }),
+    [toggleSelectedItem, selectedItem]
+  );
+  return (
+    <MenuContext.Provider value={value}>
+      <menu className="menu">{children}</menu>
+    </MenuContext.Provider>
+  );
+};
+
+const useMenuContext = () => {
+  const context = useContext(MenuContext);
+  if (!context) {
+    throw new Error(
+      "Menu item component cannot be used outside the Menu component."
+    );
+  }
+  return context;
+};
+
+const MenuItem = ({ value, children }) => {
+  const { toggleSelectedItem, selectedItem } = useMenuContext();
+
+  return (
+    <button
+      onClick={() => toggleSelectedItem(value)}
+      id={`${value}-menu-item`}
+      className={`menu__item ${selectedItem === value && "active"}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="App">
+      <Menu defaultSelected="My account">
+        <MenuItem value="Profile">Profile</MenuItem>
+        <MenuItem value="My account">My account</MenuItem>
+        <MenuItem value="Logout">Logout</MenuItem>
+      </Menu>
+    </div>
+  );
+}

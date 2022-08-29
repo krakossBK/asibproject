@@ -1,38 +1,38 @@
 import React from 'react'
 
-export const Users = ({users}) => {
+export const Useers = ({useers}) => {
 
-    console.log('users length:::', users.length)
-    if (users.length === 0) return null
+    console.log('useers length:::', useers.length)
+    if (useers.length === 0) return null
 
-    const UserRow = (user,index) => {
+    const UseerRow = (useer,index) => {
 
         return(
               <tr key = {index} className={index%2 === 0?'odd':'even'}>
                   <td>{index + 1}</td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.email}</td>
+                  <td>{useer.firstName}</td>
+                  <td>{useer.lastName}</td>
+                  <td>{useer.email}</td>
               </tr>
           )
     }
 
-    const userTable = users.map((user,index) => UserRow(user,index))
+    const UseerTable = useers.map((useer,index) => UseerRow(useer,index))
 
     return(
         <div className="container">
-            <h2>Users</h2>
+            <h2>useers</h2>
             <table className="table table-bordered">
                 <thead>
                 <tr>
-                    <th>User Id</th>
+                    <th>useer Id</th>
                     <th>Firstname</th>
                     <th>Lastname</th>
                     <th>Email</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {userTable}
+                    {UseerTable}
                 </tbody>
             </table>
         </div>

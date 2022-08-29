@@ -1,0 +1,316 @@
+To create a new ReactJS project, open the command prompt, and enter the following command:
+
+npx create-react-app crudwithceactjs
+
+Open the newly created project in Visual Studio Code and install Reactstrap and Bootstrap by using the following commands:
+
+npm install –save bootstrap
+npm install –save reactstrap react react-dom
+
+After that you have to call the bootstrap in the index.js file.
+
+import ‘bootstrap/dist/css/bootstrap.css’;
+
+Now, go to the “src” folder and add a new folder “Category” and four new components:
+
+AddCategory.js
+CategoryList.js
+EditCategory.js
+Table.js
+
+Install the Axios library by using the following command. Learn more about Axios library
+
+npm install –save axios
+
+Add routing: Use the following command to add routing in React.
+
+npm install react-router-dom –save
+
+Now are going to add the required code in all the files. We are using Axios for the api calling we can also use fetch for calling the api.
+
+AddCategory.js
+
+import React from 'react';
+import axios from 'axios';
+import '../Category/AddCategory.css';
+import { Container, Col, Form, Row, FormGroup, Label, Input, Button } from 'reactstrap';
+class AddCategory extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            Name: '',
+            Price: '',
+        }
+    }
+    AddCategory = () => {
+        axios.post('https://localhost:44317/api/Category/AddCategory', { Name: this.state.Name, Price: this.state.Price })
+            .then(json => {
+                if (json) {
+                    alert("Data Saved Successfully");
+                    this.props.history.push('/CategoryList')
+                }
+                else {
+                    alert('Data not Saved');
+                    this.props.history.push('/CategoryList')
+                }
+            })
+    }
+    handleChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value });
+    }
+    render() {
+        return (
+            <Container className="App">
+                <h4 className="PageHeading">Enter Category Informations</h4>
+                <Form className="form">
+                    <Col>
+                        <FormGroup row>
+                            <Label for="name" sm={2}>Name</Label>
+                            <Col sm={10}>
+                                <Input type="text" name="Name" onChange={this.handleChange} value={this.state.Name} placeholder="Enter Name" />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label for="address" sm={2}>Price</Label>
+                            <Col sm={10}>
+                                <Input type="text" name="Price" onChange={this.handleChange} value={this.state.Price} placeholder="Enter Price" />
+                            </Col>
+                        </FormGroup>
+                    </Col>
+                    <Col>
+                        <FormGroup row>
+                            <Col sm={5}>
+                            </Col>
+                            <Col sm={1}>
+                                <button type="button" onClick={this.AddCategory} className="btn btn-success">Submit</button>
+                            </Col>
+                            <Col sm={1}>
+                                <Button color="danger">Cancel</Button>{' '}
+                            </Col>
+                            <Col sm={5}>
+                            </Col>
+                        </FormGroup>
+                    </Col>
+                </Form>
+            </Container>
+        );
+    }
+}
+export default AddCategory;
+Add a new file  AddCategory.css file and add the following CSS classes. Import this file in the  AddCategory.js component.
+
+.PageHeading    
+{    
+  margin-top: 10px;    
+  margin-bottom: 10px;    
+  color :black !important;    
+}
+EditCategory.js
+
+import React from 'react';
+import { Container, Col, Form, Row, FormGroup, Label, Input, Button } from 'reactstrap';
+import axios from 'axios'
+import '../Category/AddCategory.css'
+class Edit extends React.Component {
+    constructor(props) {
+        super(props)
+        this.onChangeName = this.onChangeName.bind(this);
+        this.onChangePrice = this.onChangePrice.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.state = {
+            Name: '',
+            Price: '',
+        }
+    }
+    componentDidMount() {
+        axios.get('https://localhost:44317/api/Category/GetCategoryById?categoryId=' + this.props.match.params.id)
+            .then(response => {
+                this.setState({
+                    Name: response.data.name,
+                    Price: response.data.price
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+    onChangeName(e) {
+        this.setState({
+            Name: e.target.value
+        });
+    }
+    onChangePrice(e) {
+        this.setState({
+            Price: e.target.value
+        });
+    }
+    onSubmit(e) {
+        debugger;
+        e.preventDefault();
+        const obj = {
+            Id: this.props.match.params.id,
+            Name: this.state.Name,
+            Price: this.state.Price
+        };
+        axios.post('https://localhost:44317/api/Category/UpdateCategory', obj)
+            .then(res => { this.props.history.push('/CategoryList') });
+
+    }
+    render() {
+        return (
+            <Container className="App">
+                <h4 className="PageHeading">Update Category Informations</h4>
+                <Form className="form" onSubmit={this.onSubmit}>
+                    <Col>
+                        <FormGroup row>
+                            <Label for="name" sm={2}>Name</Label>
+                            <Col sm={10}>
+                                <Input type="text" name="Name" value={this.state.Name} onChange={this.onChangeName}
+                                    placeholder="Enter Name" />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label for="Password" sm={2}>Price</Label>
+                            <Col sm={10}>
+                                <Input type="text" name="Price" value={this.state.Price} onChange={this.onChangePrice} placeholder="Enter Price" />
+                            </Col>
+                        </FormGroup>
+                    </Col>
+                    <Col>
+                        <FormGroup row>
+                            <Col sm={5}>
+                            </Col>
+                            <Col sm={1}>
+                                <Button type="submit" color="success">Submit</Button>{' '}
+                            </Col>
+                            <Col sm={1}>
+                                <Button color="danger">Cancel</Button>{' '}
+                            </Col>
+                            <Col sm={5}>
+                            </Col>
+                        </FormGroup>
+                    </Col>
+                </Form>
+            </Container>
+        );
+    }
+}
+export default Edit;
+CategoryList.js
+
+import React, { Component } from 'react';
+import axios from 'axios';
+import Table from './Table';
+export default class Categorylist extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { business: [] };
+    }
+    componentDidMount() {
+        axios.get('https://localhost:44317/api/Category/GetAllCategories')
+            .then(response => {
+                this.setState({ business: response.data });
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+    
+    tabRow() {
+        return this.state.business.map(function (object, i) {
+            return <Table obj={object} key={i} />;
+        });
+    }
+    render() {
+        return (
+            <div>
+                <h4 align="center">Category List</h4>
+                <table className="table table-striped" style={{ marginTop: 10 }}>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th colSpan="4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.tabRow()}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+}
+Here we are using child Table Component for the table content.
+
+Table.js
+
+import React, { Component } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+class Table extends Component {
+    constructor(props) {
+        super(props);
+    }
+    DeleteCategory = () => {
+        axios.post('https://localhost:44317/api/Category/DeleteCategory?categoryId=' + parseInt(this.props.obj.id))
+            .then(json => {
+                alert('Record deleted successfully!!');
+            })
+    }
+    render() {
+        return (
+            <tr>
+                <td>
+                    {this.props.obj.name}
+                </td>
+                <td>
+                    {this.props.obj.price}
+                </td>
+                <td>
+                    <Link to={"/edit/" + this.props.obj.id} className="btn btn-success">Edit</Link>
+                </td>
+                <td>
+                    <button type="button" onClick={this.DeleteCategory} className="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+        );
+    }
+}
+export default Table;
+We have written our routing code in the App.js.
+
+import React from 'react';
+import AddCategory from './Category/AddCategory';
+import Categorylist from './Category/CategoryList';
+import EditCategory from './Category/EditCategory';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import './App.css';
+function App() {
+  return (
+    <Router>
+      <div className="container">
+        <nav className="navbar navbar-expand-lg navheader">
+          <div className="collapse navbar-collapse" >
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item">
+                <Link to={'/AddCategory'} className="nav-link">AddCategory</Link>
+              </li>
+              <li className="nav-item">
+                <Link to={'/Categorylist'} className="nav-link">Category List</Link>
+              </li>
+            </ul>
+          </div>
+        </nav> <br />
+        <Switch>
+          <Route exact path='/AddCategory' component={AddCategory} />
+          <Route path='/edit/:id' component={EditCategory} />
+          <Route path='/Categorylist' component={Categorylist} />
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+export default App;
+After that run the project by using the command npm start.

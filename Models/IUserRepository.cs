@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace asibproject.Models
 {
-    public interface IUserRepository
+    public interface IUseerRepository
     {
-        IEnumerable<UserModel> GetAll();
+        IEnumerable<UseerModel> GetAll();
         
-        UserModel Add(UserModel user);
+        UseerModel Add(UseerModel useer);
     }
 }

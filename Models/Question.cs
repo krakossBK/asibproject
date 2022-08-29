@@ -6,26 +6,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace asibproject
 {
     /// <summary>
-    /// Таблица пользователей
+    /// Таблица вопросов
     /// </summary>
-    [Table("users", Schema = "dbo")]
-    public class User
+    [Table("question", Schema = "dbo")]
+    public class Question
     {
         /// <summary>
-        /// Имя
+        /// Текст Вопроса
         /// </summary>
-       [Column("firstname")]
-        public string FirstName { get; set; }
-        /// <summary>
-        /// Фамилия
-        /// </summary>
-        [Column("lastname")]
-        public string LastName { get; set; }
-        /// <summary>
-        /// Отчетство
-        /// </summary>
-        [Column("patrname")]
-        public string PatrName { get; set; }
+       [Column("textquestions")]
+        public string TextQuestion { get; set; }        
         /// <summary>
         /// Дата добавления
         /// </summary>
@@ -38,3 +28,13 @@ namespace asibproject
         public int Id { get; set; }
     }
 }
+/*
+ CREATE TABLE dbo.questions (
+	textquestions varchar NOT NULL,
+	added timestamp NOT NULL,
+	id serial4 NOT NULL,
+	CONSTRAINT questions_id_key UNIQUE (id),
+	CONSTRAINT questions_pkey PRIMARY KEY (id)
+);
+CREATE INDEX questions_id_idx ON dbo.questions USING btree (id);
+ */

@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+Что-то больше похоже на статью "как в реальном проекте делать лучше не стоит".
+Уже давно есть библиотека react-promise-tracker все статься сводится к:
+
+
+import React from 'react';
+import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+
+const area = 'persons';
+const apiUrl = 'http://www.filltext.com/**************';
+
+const App = () => {
+    const { promiseInProgress } = usePromiseTracker({ area });
+    const [ persons, setPersons ] = useState(null);
+
+    useEffect(() => {
+      trackPromise(axios.get(apiUrl), area).then(({ data }) => {
+        setPersons(data);
+      });
+    }, [setAppState]);
+
+    return (
+      <div className="app">
+          {promiseInProgress
+            ? <div>Подождите, данные загружаются!</div>
+            : <Component data={persons} /> }
+      </div>
+    );
+  }
+
+  export default App;
+
+Причем const { promiseInProgress } = usePromiseTracker({ area }); 
+можно вынести в отдельный компонент и передавать туда area. 
+И не оборачивать его функцией на подобии OnLoadingUserData 
+а просто использовать children.
+</body>
+</html>

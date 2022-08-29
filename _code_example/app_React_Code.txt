@@ -1,0 +1,537 @@
+1)  we need to install Node.js .Node.js (nodejs.org)
+
+2)  Now we need to create a new react app. Here “crudinreact” is the application name.
+
+Enter the below code in terminal and it will create a new react app.
+
+npx create-react-app crudinreact
+3) App is created then use the below command to select the directory
+
+cd crudinreact
+4) To run the app enter the below code in terminal
+
+npm start
+Now we need to create APIs for crud in Asp .NET core
+
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using CRUDAspCoreWebApi.Models;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+namespace CRUDAspCoreWebApi.Controllers
+{
+    [EnableCors("MyPolicy")]
+    [ApiController]
+    public class EmployeeController : ControllerBase
+    {
+        private readonly ApplicationDbContext _db;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public EmployeeController(ApplicationDbContext db, IHostingEnvironment hostingEnvironment)
+        {
+            _db = db;
+            _hostingEnvironment = hostingEnvironment;
+        }
+        [HttpGet]
+        [Route("api/Employee/List")]
+        public async Task<IActionResult> GetList()
+        {
+            try
+            {
+                var list = await _db.Employee.Include(x => x.State).ToListAsync();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }      
+        [HttpPost]
+        [Route("api/Employee/Create")]
+        public async Task<IActionResult> PostEmp(Employee Emp)
+        {
+            try
+            {
+                Emp.empImage = GetImage(Emp.empImage);
+                _db.Employee.Add(Emp);
+                await _db.SaveChangesAsync();
+                return Ok(Emp);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        string Filename;
+        private string GetImage(string Image)
+        {
+            Regex regex = new Regex(@"^[\w/\:.-]+;base64,");
+            Image = regex.Replace(Image, string.Empty);
+            byte[] Files = Convert.FromBase64String(Image);
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            string path = webRootPath + "/ImageStorage";
+            if (!System.IO.Directory.Exists(path))
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            var data = Image.Substring(0, 5);
+            switch (data.ToUpper())
+            {
+                case "IVBOR":
+                    Filename = Guid.NewGuid().ToString() + ".png";
+                    break;
+                case "/9J/4":
+                    Filename = Guid.NewGuid().ToString() + ".jpg";
+                    break;
+            }
+            string imgPath = Path.Combine(path, Filename);
+            System.IO.File.WriteAllBytes(imgPath, Files);
+            string Images = "/ImageStorage/" + Filename;
+            return Images;
+        }
+        [HttpGet]
+        [Route("api/Employee/GetId")]
+        public async Task<IActionResult> GetId(int id)
+        {
+            try
+            {
+                if (id == 0)
+                    return BadRequest();
+                Employee Emp = await _db.Employee.Include(x => x.State).FirstOrDefaultAsync(x => x.empId == id);
+                if (Emp == null)
+                    return BadRequest();
+                return Ok(Emp);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        [HttpPost]
+        [Route("api/Employee/Edit")]
+        public async Task<IActionResult> PutEmp(Employee emp)
+        {
+            try
+            {
+                var Image = emp.empImage.Substring(0,14);
+                if (Image != "/ImageStorage/")
+                {
+                    emp.empImage = GetImage(emp.empImage);
+                }                
+                _db.Entry(emp).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
+                return Ok(emp);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        [HttpDelete]
+        [Route("api/Employee/Delete")]
+        public async Task<IActionResult> DeleteEmp(int id)
+        {
+            try
+            {
+                Employee emp = _db.Employee.Find(id);
+                _db.Employee.Remove(emp);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+}
+Now add the below code in Startup.cs file in ConfigureServices
+
+services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+}));
+Add also in below code in Startup.cs file in Configure
+
+ *******************************************************************************
+
+app.UseStaticFiles();
+app.UseCors("MyPolicy");
+ 
+***********************************************************************************************
+Now open the React App “crudinreact”
+Open  src => components  Add Layout  folder
+Add new file Navbar.js and enter below code
+
+********************************************************************************************
+
+import React from "react";
+import { NavLink } from "react-router-dom";
+const Navbar = () => {
+    return(
+        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div className="container">
+        <div className="collapse navbar-collapse">                   
+            <ul className="navbar-nav mr-auto">
+                <li className="nav-item">
+                    <NavLink className="nav-link" exact to="/">
+                        Home 
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+        </div>
+        </nav>
+    );
+}
+export default Navbar;
+Install  react-router-dom enter below code in terminal
+
+$ npm install --save react-router-dom
+Now Open  src => components add Pages folder
+
+Now add two files  Home.js  and  AddEmployee.js
+
+Add  below code in Home.js file
+
+import React from "react";
+import Moment from 'moment';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+class EmployeeList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            error: null,
+            Employee: [],           
+            ProfileImage : 'https://localhost:44324'
+        };
+    }
+    componentDidMount() {
+        const apiurl = 'https://localhost:44324/api/Employee/List';
+        fetch(apiurl)
+            .then(res => res.json())
+            .then(result => {
+                this.setState({                              
+                    Employee: result
+                })
+            },
+                (error) => {
+                    this.setState({ error })
+                }
+            )
+    }    
+    
+    render() {
+        const { error, Employee } = this.state;
+        const {ProfileImage} = this.state;
+        if (error) {
+            return (
+                <div>Error: {error.message}</div>
+            )
+        }
+        else {
+            return (
+                <div className="container"><br></br>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Image</th>
+                                <th>BirthDate</th>
+                                <th>Gender</th>
+                                <th>hobby</th>
+                                <th>Address</th>
+                                <th>State</th>
+                                <th style={{paddingLeft:"22px"}}>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Employee.map(employee => {
+                                return <tr key={employee.empId}>
+                                    <td>{employee.empName}</td>
+                                    <td>{employee.email}</td>                            
+                                    <td><input type="image" src = {ProfileImage + employee.empImage} alt="photo" height="150" width="120" /></td>
+                                    <td>{Moment(employee.birthDate).format('YYYY-MM-DD')}</td>
+                                    <td>{employee.gender}</td>
+                                    <td>{employee.hobby}</td>
+                                    <td>{employee.address}</td>
+                                    <td>{employee.state.stateName}</td>
+                                    <td><button className="btn btn-info" onClick={()=> this.props.editEmployee(employee.empId)} style={{padding:"5px"}} ><EditIcon style={{padding:"3px"}}/></button>
+                                   &nbsp; <button className="btn btn-danger" onClick={()=> this.props.deleteEmployee(employee.empId)} style={{padding:"5px"}} ><DeleteIcon style={{padding:"3px"}}/></button></td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            )
+        }
+    }
+}
+export default EmployeeList;
+Now Add  below code in  AddEmployee.js  file
+
+import React from "react";
+import Moment from 'moment';
+class AddEmployee extends React.Component{
+    constructor(props) {
+        super(props);
+        this.initialState = {
+            empId : '',
+            empName : '',
+            email : '',
+            empImage : '',
+            birthDate : '',
+            gender : '',
+            hobby : '',
+            address : '',
+            stateId : ''
+        }
+        if(props.employee){
+            this.state = props.employee;
+        }
+        else{      
+            this.state = this.initialState;
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        debugger
+        const name = event.target.name;
+        const value = event.target.value;        
+        const file = event.target.files;
+        if(file != null)
+        {           
+            const uploadedFile = file.item(0);
+            var reader = new FileReader();
+            reader.readAsDataURL(uploadedFile);            
+            reader.onload = () => {            
+                const supportObj = {
+                fileName: uploadedFile.name,
+                fileBase64: reader.result.toString().substr(reader.result.toString().indexOf('base64,') + 7),
+                fileType: uploadedFile.type
+                };   
+                const Base = supportObj.fileBase64; 
+                this.setState({
+                    [name] : Base
+                })
+            };                             
+        }
+        else    
+        {
+            this.setState({
+                [name] : value
+            })
+        }           
+    }
+    handleSubmit(event) {
+        event.preventDefault();
+        this.props.onFormSubmit(this.state)
+        this.setState(this.initialState)
+    }
+    render() {
+        let Title;
+        if(!this.state.empId){      
+            Title = <h2>Add Employee</h2>
+        }
+        else{
+            Title = <h2>Edit Employee</h2>
+        }
+        
+        return(
+            <div className="container">
+                {Title}<br></br>
+                <form onSubmit={this.handleSubmit}>
+                    <div className="form-group">
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <label>Name</label>
+                                <input type="text" name="empName" onChange={this.handleChange}                                   
+                                className="form-control" value={this.state.empName} placeholder="Name" required/>
+                            </div>
+                            <div className="col-sm-6">
+                                <label>Email</label>
+                                <input type="text" name="email" onChange={this.handleChange}                                   
+                                className="form-control" value={this.state.email} placeholder="Email" required/>
+                            </div>                                    
+                        </div>                               
+                    </div><br></br>
+                    <div className="form-group">
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <label>EmpImage</label>
+                                <input type="file" name="empImage" onChange={this.handleChange}                                   
+                                className="form-control" />
+                            </div>
+                            <div className="col-sm-6">
+                                <label>BirthDate</label>
+                                <input type="date" name="birthDate" value={Moment(this.state.birthDate).format('YYYY-MM-DD')}   onChange={this.handleChange}                                   
+                                className="form-control" placeholder="BirthDate" required/>
+                            </div>                                    
+                        </div>   
+                    </div><br></br>
+                    <div className="form-group">
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <label>Gender</label> <br></br>
+                                <input type="radio" name="gender" value="Male" checked={this.state.gender === 'Male'}  onChange={this.handleChange} /> Male &nbsp;
+                                <input type="radio" name="gender" value="Female" checked={this.state.gender === 'Female'}  onChange={this.handleChange} /> Female
+                            </div>
+                            <div className="col-sm-6">
+                                <label>hobby</label> <br></br>
+                                <input type="checkbox" name="hobby" value="Cricket" checked={this.state.hobby === 'Cricket'} onChange={this.handleChange} /> Cricket &nbsp;
+                                <input type="checkbox" name="hobby" value="Volleyball" checked={this.state.hobby === 'Volleyball'} onChange={this.handleChange} /> Volleyball &nbsp;
+                                <input type="checkbox" name="hobby" value="Football" checked={this.state.hobby === 'Football'} onChange={this.handleChange} /> Football
+                            </div>                                    
+                        </div>   
+                    </div><br></br>
+                    <div className="form-group">
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <label>Address</label> <br></br>
+                                <textarea  name="address" value={this.state.address} rows="1" onChange={this.handleChange}                                   
+                                className="form-control" placeholder="Address" required></textarea>
+                            </div>
+                            <div className="col-sm-6">
+                                <label>State</label>
+                                <select name="stateId" className="form-control" value={this.state.stateId} onChange={this.handleChange} required >
+                                    <option value="">-- SELECT STATE --</option>
+                                    <option value="1">Gujarat</option>
+                                    <option value="2">Maharashtra</option>
+                                    <option value="3">Punjab</option>
+                                </select>
+                            </div>                                    
+                        </div>   
+                    </div><br></br>  
+                    <div className="form-group">
+                        <input type="hidden" name="EmpId" value={this.state.EmpId} className="form-control"/>
+                        <button className="btn btn-success" type="submit">Save</button>
+                        <a href="/">
+                        <button className="btn btn-default" type="button">Cancel</button>
+                        </a>                                               
+                    </div>      
+                </form>              
+            </div>
+        )
+    }
+}
+export default AddEmployee;
+Now open App.js file and Enter below code
+
+import React from 'react';
+import './App.css';
+import Home from "./components/pages/Home";
+import Navbar from './components/Layout/Navbar';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AddEmployee from "./components/pages/AddEmployee";
+import { Alert } from 'bootstrap';
+import AddIcon from '@material-ui/icons/Add';
+class App extends React.Component{
+  
+  constructor(props){
+    super(props);
+    this.state = {
+        isAddEmployee : false,
+        error : null,
+        response : {},
+        employee : {},
+        isEditEmployee : false
+    }
+    this.onFormSubmit = this.onFormSubmit.bind(this);
+  }
+  onCreate() {
+    this.setState({ isAddEmployee : true});
+  }
+  onFormSubmit(data) {
+    debugger
+    let apiurl;
+    if(this.state.isEditEmployee){
+      apiurl = 'https://localhost:44324/api/Employee/Edit';
+    }
+    else{
+      apiurl = 'https://localhost:44324/api/Employee/Create';
+    }             
+    const options = {
+       method : 'POST',
+       body : JSON.stringify(data),
+       headers : {
+        "content-type": "application/json",
+        "accept": "application/json"
+      }
+    };
+    fetch(apiurl,options)
+      .then(res => res.json())
+      .then(result => {
+          this.setState({
+              response : result,
+              isAddEmployee : false,
+              isEditEmployee : false
+          })          
+      },
+      error => {
+        this.setState({ error });
+      }
+      )
+  }
+  editEmployee = empId =>{
+    const apiurl = 'https://localhost:44324/api/Employee/GetId?id=' + empId;
+    fetch(apiurl)
+      .then(res => res.json())
+      .then(result => {
+          this.setState({
+              employee : result,
+              isAddEmployee : true,
+              isEditEmployee : true
+          })          
+      },
+      error => {
+        this.setState({ error });
+      }
+      )
+  }
+  deleteEmployee = empId =>{
+    debugger
+    const apiurl = 'https://localhost:44324/api/Employee/Delete?id=' + empId;
+    const options = {
+      method : 'Delete',
+    };
+    fetch(apiurl,options)
+      .then(result => {
+        debugger
+          window.location.href = 'http://localhost:3000/';
+      },
+      error => {
+        this.setState({ error });
+      }
+      )
+  }
+  render(){
+    let EmployeeForm;
+    if(this.state.isAddEmployee || this.state.isEditEmployee ){
+        EmployeeForm = <AddEmployee onFormSubmit={this.onFormSubmit} employee={this.state.employee} />
+    }
+    return (
+      <Router>
+        <div className="App">
+          <Navbar />
+          <br></br>
+          <div className="container">
+            {!this.state.isAddEmployee && <button className="btn btn-primary" onClick={() => this.onCreate()}><AddIcon/>Add Employee</button>}
+          </div>          
+          {this.state.response.status === 'success' && <div><br/><Alert className="info">{this.state.response.status}</Alert></div>}
+          {!this.state.isAddEmployee && <Home editEmployee={this.editEmployee} deleteEmployee={this.deleteEmployee} />}
+          {EmployeeForm}
+          {this.state.error && <div>Error: {this.state.error.message}</div>}
+          </div>
+      </Router>
+    );
+  }
+}
+export default App;

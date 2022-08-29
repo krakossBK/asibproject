@@ -2,32 +2,32 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
 import { Header } from './components/Header'
-import { Users } from './components/Users'
-import CreateUser from './components/CreateUser'
+import { Useers } from './components/Useers'
+import CreateUseer from './components/CreateUseer'
 import { DisplayBoard } from './components/DisplayBoard'
-import UserShowsContainer from './components/UserShowsContainer'
-import { getAllUsers, createUser } from './services/UserService'
+import UseerShowsContainer from './components/UseerShowsContainer'
+import { getAllUseers, createUseer } from './services/UseerService'
 
 class App extends Component {
 
     state = {
-        user: {},
-        users: [],
-        numberOfUsers: 0
+        useer: {},
+        useers: [],
+        numberOfUseers: 0
     }
 
-    createUser = (e) => {
-        console.log('firstName=> ' + this.state.user.firstName);
-        console.log('lastName=> ' + this.state.user.lastName);
-        if (this.state.user.firstName === undefined || this.state.user.lastName === undefined || this.state.user.firstName.length < 3 || this.state.user.lastName.length < 3) {
+    createUseer = (e) => {
+        console.log('firstName=> ' + this.state.useer.firstName);
+        console.log('lastName=> ' + this.state.useer.lastName);
+        if (this.state.useer.firstName === undefined || this.state.useer.lastName === undefined || this.state.useer.firstName.length < 3 || this.state.useer.lastName.length < 3) {
             alert('lastName firstName  ==="undefined"');
 
         }
         else {
-            createUser(this.state.user)
+            createUseer(this.state.useer)
                 .then(response => {
                     console.log(response);
-                    this.setState({ numberOfUsers: this.state.numberOfUsers + 1, shows: response, loading: true, error: "" })
+                    this.setState({ numberOfuseers: this.state.numberOfuseers + 1, shows: response, loading: true, error: "" })
                 });
         }
 
@@ -44,24 +44,24 @@ class App extends Component {
         }
      * 
      * */
-    getAllUsers = () => {
-        getAllUsers()
-            .then(users => {
-               /* console.log(users)*/
-                this.setState({ users: users, numberOfUsers: users.length, shows: users, loading: true, error: ""  })
+    getAllUseers = () => {
+        getAllUseers()
+            .then(useers => {
+               /* console.log(useers)*/
+                this.setState({ useers: useers, numberOfuseers: useers.length, shows: useers, loading: true, error: ""  })
             });
     }
 
     onChangeForm = (e) => {
-        let user = this.state.user
+        let useer = this.state.useer
         if (e.target.name === 'firstname') {
-            user.firstName = e.target.value;
+            useer.firstName = e.target.value;
         } else if (e.target.name === 'lastname') {
-            user.lastName = e.target.value;
+            useer.lastName = e.target.value;
         }
-        user.email = 'krakoss@krakoss.ru';
-        if (user.firstName !== null && user.lastName !== null) {
-            this.setState({ user })
+        useer.email = 'krakoss@krakoss.ru';
+        if (useer.firstName !== null && useer.lastName !== null) {
+            this.setState({ useer })
         }
         else {
             alert('hi hi Krakoss');
@@ -77,25 +77,25 @@ class App extends Component {
                 <div className="container mrgnbtm">
                     <div className="row">
                         <div className="col-md-8">
-                            <CreateUser
+                            <CreateUseer
                                 onChangeForm={this.onChangeForm}
-                                createUser={this.createUser}
+                                createUseer={this.createUseer}
                             >
-                            </CreateUser>
+                            </CreateUseer>
                         </div>
                         <div className="col-md-4">
                             <DisplayBoard
-                                numberOfUsers={this.state.numberOfUsers}
-                                getAllUsers={this.getAllUsers}
+                                numberOfuseers={this.state.numberOfuseers}
+                                getAllUseers={this.getAllUseers}
                             >
                             </DisplayBoard>
                         </div>
                     </div>
                 </div>
                 <div className="row mrgnbtm">
-                    <Users users={this.state.users}></Users>
+                    <Useers useers={this.state.useers}></Useers>
                 </div>
-                <UserShowsContainer></UserShowsContainer>
+                <UseerShowsContainer></UseerShowsContainer>
             </div>
         );
     }

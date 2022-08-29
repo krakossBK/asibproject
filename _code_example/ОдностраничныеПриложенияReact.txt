@@ -1,0 +1,471 @@
+Одностраничные приложения React с модулями React-Router and React-Transition-Group
+Дата публикации: 2018-05-18
+
+Одностраничные приложения React с модулями React-Router and React-Transition-Group
+
+От автора: в этом уроке вы узнаете, как с помощью модулей react-router и react-transition-group создавать многостраничное React приложение с анимациями page transition.
+
+
+Подготовка приложения React
+Установка пакета create-react-app
+Если вы хоть раз пробовали React, возможно, вы слышали о пакете create-react-app. Он сильно упрощает начало разработки в React.
+
+В этом уроке мы будем использовать этот пакет для инициализации приложения React. Прежде всего, установите Node.js. Он также поставит npm.
+
+Запустите в консоли npm install -g create-react-app. Команда глобально установит create-react-app на ваш компьютер.
+
+Далее можно проверить установку с помощью команды create-react-app -V.
+
+
+Хотите узнать, что необходимо для создания сайта?
+
+Посмотрите видео и узнайте пошаговый план по созданию сайта с нуля!
+
+Смотреть видео
+Создание проекта React
+Необходимо создать проект React. Просто запустите create-react-app multi-page-app. multi-page-app можно заменить на свое название.
+
+create-react-app создаст папку multi-page-app. Выполните cd multi-page-app, чтобы сменить папку. Далее выполните npm start для инициализации локального сервера.
+
+Это все. Вы запустили приложение React на локальном сервере. Необходимо почистить стандартные файлы и подготовить приложение. В папке src удалите все кроме App.js и index.js. В файле index.js замените код на следующий:
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+ 
+ReactDOM.render(<App />, document.getElementById('root')); 
+1
+2
+3
+4
+5
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+ 
+ReactDOM.render(<App />, document.getElementById('root')); 
+Я в основном удалил строки, связанные с registerServiceWorker, а также строку import ‘./index.css’;. В файле App.js замените код на следующий:
+
+import React, { Component } from 'react';
+ 
+class App extends Component {
+  render() {
+ return (
+ <div className="App">
+ 
+ </div>
+ );
+  }
+}
+ 
+export default App; 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+import React, { Component } from 'react';
+ 
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+ 
+      </div>
+    );
+  }
+}
+ 
+export default App; 
+Далее установим необходимые модули. Чтобы установить модули react-router и react-transition-group, выполните в терминале следующие команды.
+
+npm install react-router-dom --save
+npm install react-transition-group@1.x --save
+1
+2
+npm install react-router-dom --save
+npm install react-transition-group@1.x --save
+После установки пакетов можно их проверить. Откройте файл package.json в главной папке проекта, модули должны быть подключены под dependencies.
+
+Компоненты роутера
+Есть 2 разных варианта роутера: HashRouter и BrowserRouter.
+
+Исходя из названия, HashRouter использует хэши для отслеживания ссылок – подходит для статических серверов. Если же сервер динамический, лучше использовать BrowserRouter – с ним URL будет красивее.
+
+Как только решили, что будете использовать, добавьте компонент в файл index.js.
+
+import { HashRouter } from 'react-router-dom' 
+1
+import { HashRouter } from 'react-router-dom' 
+Далее необходимо обернуть компонент <App> в компонент роутера. Конечный вариант файла index.js:
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { HashRouter } from 'react-router-dom'
+import App from './App';
+ 
+ReactDOM.render(<HashRouter><App/></HashRouter>, document.getElementById('root')); 
+1
+2
+3
+4
+5
+6
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { HashRouter } from 'react-router-dom'
+import App from './App';
+ 
+ReactDOM.render(<HashRouter><App/></HashRouter>, document.getElementById('root')); 
+Если вы выберите динамический сервер и BrowserRouter, единственное различие будет в том, что необходимо будет импортировать BrowserRouter и с его помощью обернуть компонент App.
+
+Оборачивая компонент App, мы создаем объект приложения history, посредством которого компоненты react-router смогут общаться друг с другом.
+
+Внутри компонента App
+Внутри компонента App у нас будет 2 компонента Menu и Content. Исходя из названий, они будут хранить меню и показывать контент. Создайте папку components внутри папки src. Создайте файлы Menu.js и Content.js.
+
+Menu.js
+Наполним компонент Menu.js. Это будет функциональный компонент без состояния. Нам не нужны состояния и хуки жизненного цикла.
+
+import React from 'react'
+ 
+const Menu = () =>{
+  return(
+ <ul>
+ <li>Home</li>
+ <li>Works</li>
+ <li>About</li>
+ </ul>
+  )
+}
+ 
+export default Menu 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+import React from 'react'
+ 
+const Menu = () =>{
+  return(
+    <ul>
+      <li>Home</li>
+      <li>Works</li>
+      <li>About</li>
+    </ul>
+  )
+}
+ 
+export default Menu 
+У нас есть ul с тегами li для ссылок. Добавьте строку ниже в компонент Menu.
+
+import { Link } from 'react-router-dom' 
+1
+import { Link } from 'react-router-dom' 
+Оберните контент тегов li в компонент <Link>.
+
+Компонент Link — это react-router компонент, который ведет себя как тег <a>, но не перезагружает страницу с новой ссылкой.
+
+Если через CSS добавить стили тегу a, компонент Link также примет эти стили. Есть расширенная версия компонент Link – NavLink. Этот компонент предлагает возможность стилизовать активные ссылки. Необходимо определить, куда будут вести ссылки. Для этого в компоненте Link есть свойство to.
+
+
+Хотите узнать, что необходимо для создания сайта?
+
+Посмотрите видео и узнайте пошаговый план по созданию сайта с нуля!
+
+Смотреть видео
+import React from 'react'
+import { Link } from 'react-router-dom'
+ 
+const Menu = () =>{
+  return(
+ <ul>
+ <li><Link to="/">Home</Link></li>
+ <li><Link to="/works">Works</Link></li>
+ <li><Link to="/about">About</Link></li>
+ </ul>
+  )
+}
+ 
+export default Menu 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+import React from 'react'
+import { Link } from 'react-router-dom'
+ 
+const Menu = () =>{
+  return(
+    <ul>
+      <li><Link to="/">Home</Link></li>
+      <li><Link to="/works">Works</Link></li>
+      <li><Link to="/about">About</Link></li>
+    </ul>
+  )
+}
+ 
+export default Menu 
+Content.js
+Внутри компонента Content мы определим Routes, которые будут совпадать с Links. Нам понадобятся компоненты Switch и Route из react-router-dom. Поэтому сначала импортируйте их.
+
+import { Switch, Route } from 'react-router-dom' 
+1
+import { Switch, Route } from 'react-router-dom' 
+Во-вторых, импортируйте компоненты, на которые мы будем ссылаться. Это компоненты Home, Works и About. Предположим, что вы уже создали эти компоненты в папке components. Их тоже нужно импортировать.
+
+import Home from './Home'
+import Works from './Works'
+import About from './About'
+1
+2
+3
+import Home from './Home'
+import Works from './Works'
+import About from './About'
+В этих компонентах может быть что угодно. Я просто определил их как функциональные компоненты без состояния с минимумом контента. Пример шаблона показан ниже. Его можно использовать для всех трех компонентов, но не забудьте поменять названия.
+
+import React from 'react'
+ 
+const Home = () =>{
+  return(
+ <div>
+ Home
+ </div>
+  )
+}
+ 
+export default Home 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+import React from 'react'
+ 
+const Home = () =>{
+  return(
+    <div>
+      Home
+    </div>
+  )
+}
+ 
+export default Home 
+Switch
+С помощью компонента Switch мы группируем наши компоненты Route. Switch ищет все Routes и возвращает первое совпадение.
+
+Route
+Routes – это компоненты, вызывающие целевой компонент, если он совпадает со свойством path. Конечная версия файла Content.js:
+
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
+import Home from './Home'
+import Works from './Works'
+import About from './About'
+ 
+const Content = () =>{
+  return(
+ <Switch>
+ <Route exact path="/" component={Home}/>
+ <Route path="/works" component={Works}/>
+ <Route path="/about" component={About}/>
+ </Switch>
+  )
+}
+ 
+export default Content 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
+import Home from './Home'
+import Works from './Works'
+import About from './About'
+ 
+const Content = () =>{
+  return(
+    <Switch>
+      <Route exact path="/" component={Home}/>
+      <Route path="/works" component={Works}/>
+      <Route path="/about" component={About}/>
+    </Switch>
+  )
+}
+ 
+export default Content 
+Компоненту Home нужно доп. свойство exact – это главная папка. Exact заставляет Route сравнивать четкие пути. Если он не используется, другие пути, начинающиеся с /, также будут соответствовать компоненту Home, и для каждой ссылки он будет отображать только компонент Home.
+
+Теперь по клику на ссылку меню приложение должно переключать контент.
+
+Анимация переходов Route
+На данном этапе у нас есть рабочая система роутера. Анимируем переходы роутера. Для этого воспользуемся модулем react-transition-group.
+
+Будем анимировать состояние mounting каждого компонента. Когда вы маршрутизируете разные компоненты с компонентом Route внутри Switch, вы, по существу, mounting и unmounting разные компоненты.
+
+Мы будем использовать react-transition-group в каждом компоненте, который мы хотим оживить. Таким образом, у вас может быть разная анимация для каждого компонента. Я буду использовать только одну анимацию для всех.
+
+Для примера возьмем компонент Home. Сперва необходимо импортировать CSSTransitionGroup.
+
+import { CSSTransitionGroup } from 'react-transition-group' 
+1
+import { CSSTransitionGroup } from 'react-transition-group' 
+Далее необходимо обернуть контент с его помощью.
+
+Так как мы работаем с состоянием mounting компонента, мы включаем transitionAppear и задаем таймаут. Мы также выключаем transitionEnter и transitionLeave, так как они валидны только с подключенным компонентом. Их нужно использовать, если вы хотите анимировать детей компонента.
+
+Наконец, добавьте transitionName, чтобы на него можно было ссылаться в файле CSS.
+
+import React from 'react'
+import { CSSTransitionGroup } from 'react-transition-group'
+import '../styles/homeStyle.css'
+ 
+ 
+const Home = () =>{
+  return(
+  <CSSTransitionGroup
+ transitionName="homeTransition"
+ transitionAppear={true}
+ transitionAppearTimeout={500}
+ transitionEnter={false}
+ transitionLeave={false}>
+ <div>
+ Home
+ </div>
+  </CSSTransitionGroup>
+  )
+}
+ 
+export default Home 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+import React from 'react'
+import { CSSTransitionGroup } from 'react-transition-group'
+import '../styles/homeStyle.css'
+ 
+ 
+const Home = () =>{
+  return(
+  <CSSTransitionGroup
+      transitionName="homeTransition"
+      transitionAppear={true}
+      transitionAppearTimeout={500}
+      transitionEnter={false}
+      transitionLeave={false}>
+      <div>
+        Home
+      </div>
+  </CSSTransitionGroup>
+  )
+}
+ 
+export default Home 
+Мы также импортировали CSS файл, где задали CSS переходы.
+
+.homeTransition-appear{
+  opacity: 0;
+}
+ 
+.homeTransition-appear.homeTransition-appear-active{
+  opacity: 1;
+  transition: all .5s ease-in-out;
+} 
+1
+2
+3
+4
+5
+6
+7
+8
+.homeTransition-appear{
+  opacity: 0;
+}
+ 
+.homeTransition-appear.homeTransition-appear-active{
+  opacity: 1;
+  transition: all .5s ease-in-out;
+} 
+Если обновить страницу, то на компоненте Home появится эффект fade-in.
+
+Если вы примените ту же процедуру ко всем другим маршрутизируемым компонентам, вы увидите их отдельные анимации, когда измените контент в Menu.
+
+Заключение
+В этом уроке мы рассмотрели модули react-router-dom и react-transition-group. По обоим модулям можно сказать намного больше, чем в этой статье. Вот рабочая демонстрация того, что было покрыто.
+
+Чтобы изучить больше функций, всегда просматривайте документацию используемых модулей.
+
+За последние пару лет React стал популярным. Фактически, у нас есть ряд предметов на рынке, доступных для покупки, просмотра, реализации и т.д.
+
+Автор: Dogacan Bilgili
+
+Источник: //code.tutsplus.com/
+
+Редакция: Команда webformyself.

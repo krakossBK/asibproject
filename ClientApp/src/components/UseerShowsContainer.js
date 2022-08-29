@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 import ItemsList from './ItemsList'
-//import { getAllUsers } from './../services/UserService'
+//import { getAlluseers } from './../services/useerService'
 
 
-export default class UserShowsContainer extends React.Component {
+export default class useerShowsContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -13,8 +13,8 @@ export default class UserShowsContainer extends React.Component {
         };
     }
 
-    //getAllUsers = () => {
-    //    getAllUsers()
+    //getAlluseers = () => {
+    //    getAlluseers()
     //        .then((res) => res.json())
     //        .then((data) => this.setState({ loading: false, shows: data }))
     //        .catch((error) =>
@@ -24,7 +24,7 @@ export default class UserShowsContainer extends React.Component {
     componentDidMount() {
         this.setState({ loading: true, error: "" });
        
-        fetch('/api/users')
+        fetch('/api/useers')
             .then((res) => res.json())
             .then((data) => this.setState({ loading: false, shows: data }))       
             .catch((error) =>

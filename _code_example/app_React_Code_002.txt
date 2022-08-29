@@ -1,0 +1,464 @@
+Step # 1: How to create a database?
+In this step we will create a database. So, open Microsoft SQL Server Management Studio and open a “New Query” window and then run this below command to create a new database.
+
+CREATE DATABASE Student_Db
+view rawCreate a new Database hosted with ❤ by GitHub
+Now, run this below command to create a table.
+
+CREATE TABLE [dbo].[Students](
+	[StudentId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+	[Address] [nvarchar](200) NULL,
+	[PhoneNo] [nvarchar](50) NULL,
+	[Country] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Students] PRIMARY KEY CLUSTERED 
+(
+	[StudentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+view rawCreate Student Table hosted with ❤ by GitHub
+Now, after running these above command, you will see a new database has been created with the name of “Student_Db”.
+
+Step # 2: How to Create a React and Asp.Net Core 2.0 application?
+Now, in this step we will create a new project using React.js and Asp.Net Core 2.0. So, open visual Studio 2017 and then go to File and then New and then click on “Project…”. It will open a new popup window with the name of “New Project”. Now, select Web from left pane and then select “ASP.NET CORE Web Application” from middle pane. Then enter name in the Name field and then click on Ok button.  
+
+
+Now, after clicking on OK button, it will open new popup window with the name of “New ASP.NET Core Web Application – CrudWithReactAspNetCore”. Now, select “React.js” template and then click on “Ok” button.
+
+See also  How to Create a Project in ASP.NET Core 2.0
+
+Step # 3: React and Asp Net Core Project Folder Structure
+Now, after clicking on “OK” button you will see a new application will be created with the name of “CrudWithReactAspNetCore”.
+
+
+Step # 4: How to Install nuget Packages for Database?
+Now, in this step we will add some nuget packages for the database provider and Entity Framework Tools.
+
+So, go to project manager console and then run this below command to add database provider  as you see in the below screenshot.
+
+=> Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+After sometime, it will install all the required packages as you see in the below screenshot.
+
+
+Now, run this below command to add Entity Framework Tools.
+
+=> Install-Package Microsoft.EntityFrameworkCore.Tools
+
+After sometime, it will install all the required packages as you see in the below screenshot.
+
+
+Step # 5: How to Add Models?
+Now, in this step we will add create Models using Scaffolding. So, run this below command in package manager console as you see in the below screenshot.
+
+=> Scaffold-DbContext “connection string” Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Tables Students
+
+Note: – Make sure your connection string is error free and within the quotes in above command.
+
+After running successfully this above command, then you will see a new folder “Models” in your project folder structure. And you will see this folder will contain two classes. The one is Student model and the other one is DbContext class.
+
+
+Step # 6: How to create Data Access Layer?
+Now, in this step we will create a Data Access Layer within the Models folder. So, go to project folder structure and then right click on Models folder and then Add and then click on class. And then select Class from middle pane and then write the name of class (E.g. StudentDAL) and then click on Add button as you see in the below screenshot.
+
+
+Now, open StudentDAL and then write the code as you see in the below file.
+
+Step # 7: How to add Web API Controller?
+Now, in this step we will create a new Web API. So, go to project folder structure and then right click on Controllers folder and then Add and then click on New Item. Now, select Web from left pane and then select API Controller Class from the middle pane and then enter the name (E.g. StudentController.cs) and then click on Add button as you see in the below screenshot.
+
+See also  How to add NSwag to Asp Net Core 3.0 web API and generate client code using NSwagStudio
+
+And then you will see a new class with the name of StudentController.cs under the Controllers folder. Now, open this newly created class and then write the code as you see in the below file.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CrudWithReactAspNetCore.Models;
+using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace CrudWithReactAspNetCore.Controllers
+{
+    
+    public class StudentController : Controller
+    {
+        StudentDAL obj = new StudentDAL();
+
+        [HttpGet]
+        [Route("api/Student/Index")]
+        public IEnumerable<Students> Index()
+        {
+            return obj.GetAllStudents();
+        }
+        [HttpPost]
+        [Route("api/Student/Create")]
+        public int Create(Students student)
+        {
+            return obj.CreateStudent(student);
+        }
+        [HttpGet]
+        [Route("api/Student/Details/{id}")]
+        public Students Details(int id)
+        {
+            return obj.GetStudentData(id);
+        }
+        [HttpPut]
+        [Route("api/Student/Edit")]
+        public int Edit(Students student)
+        {
+            return obj.UpdateStudent(student);
+        }
+        [HttpDelete]
+        [Route("api/Student/Delete/{id}")]
+        public int Delete(int id)
+        {
+            return obj.DeleteStudent(id);
+        }
+    }
+}
+view rawStudent API Controller - CRUD React and Asp Net Core hosted with ❤ by GitHub
+Step # 8: How to create React.js component?
+In this step, we will see how to create new components in React.js. So, we will add two components.
+
+StudentList: this component will show all the student record.
+
+AddNewStudent: this component will add new student record.
+
+So, go to project folder structure and then right click on the components folder which is under the ClientApp folder and then select Add and then click on New Item. Then select Scripts which is under the Web tab from left pane and then select TypeScript JSX File from the middle pane and then enter the name (E.g. StudentList) and then click on Add button as you see in the below screenshot.
+
+
+Then it will create a new StudentList.tsx file under the components folder.
+
+Now, add another component with the name AddNewStudent.tsx. It is same as you have seen above.
+
+Now, open StudentList.tsx file and then write the code as you see in the below file.
+
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
+import { Link, NavLink } from 'react-router-dom';
+
+
+interface StudentRecordState {
+    studentListData: StudentListData[];
+    loading: boolean;
+}
+
+//here declaring the StudentList class. And this StudentList class inherits the abstract class React.Component
+export class StudentList extends React.Component<RouteComponentProps<{}>, StudentRecordState> {
+
+    //Declaring the constructor 
+    constructor() {
+
+        //here we are calling base class constructor using super()
+        super();
+
+        //here we are intializing the interface's fields using default values.
+        this.state = { studentListData: [], loading: true };
+
+        //this fetch method is responsible to get all the student record using web api.
+        fetch('api/Student/Index')
+            .then(response => response.json() as Promise<StudentListData[]>)
+            .then(data => {
+                debugger
+                this.setState({ studentListData: data, loading: false });
+            });
+        
+        this.FuncDelete = this.FuncDelete.bind(this);
+        this.FuncEdit = this.FuncEdit.bind(this);
+    }
+
+
+    //this method will render html onto the DOM.
+    public render() {
+        let contents = this.state.loading
+            ? <p><em>Loading...</em></p>
+            : this.renderStudentTable(this.state.studentListData);//this renderStudentTable method will return the HTML table. This table will display all the record.
+        return <div>
+            <h1>Student Record</h1>
+            <p>
+                <Link to="/addStudent">Create New</Link>
+            </p>
+            {contents}
+        </div>;
+    }
+    // this method will be responsible for deleting the student record.
+    private FuncDelete(id: number) {
+        if (!confirm("Do you want to delete student with this Id: " + id))
+            return;
+        else
+        {
+            //this fetch method will get the specific student record using student id.
+            fetch('api/Student/Delete/' + id, {
+                method: 'delete'
+            }).then(data => {
+                this.setState(
+                    {
+                        studentListData: this.state.studentListData.filter((rec) => {
+                            return (rec.studentId != id);
+                        })
+                    });
+            });
+        }
+    }
+
+    //this method will responsible for editing the specific student record.
+    private FuncEdit(id: number) {
+        this.props.history.push("/student/edit/" + id);
+    }
+
+    //this method will return the html table to display all the student record with edit and delete methods.
+    private renderStudentTable(studentListData: StudentListData[]) {
+        return <table className='table'>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Country</th>
+                    <th>Phone No</th>
+                </tr>
+            </thead>
+            <tbody>
+                {studentListData.map(item =>
+                    <tr key={item.studentId}>
+                        <td >{item.name}</td>
+                        <td >{item.address}</td>
+                        <td >{item.country}</td>
+                        <td >{item.phoneNo}</td>
+                        <td >
+                            <a className="action" onClick={(id) => this.FuncEdit(item.studentId)}>Edit</a>|
+                            <a className="action" onClick={(id) => this.FuncDelete(item.studentId)}>Delete</a>
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </table>;
+    }
+}
+
+//here we are declaring a class which have the same properties as we have in model class.
+export class StudentListData {
+    studentId: number = 0;
+    name: string = "";
+    address: string = "";
+    country: string = "";
+    phoneNo: string = "";
+}
+view rawStudent List Component - CRUD React and Asp Net Core hosted with ❤ by GitHub
+Let’s understand the above code..
+
+Line # 12: here in this line, we are declaring the StudentList class. And this class inherits the abstract class React.Component.
+
+Line # 15: here in this line, we are declaring the Constructor
+
+Line # 18: here in this line, we are calling the base class constructor using super().
+
+Line # 21: here in this line, we are intializing the interface’s fields using the default values.
+
+Line # 24 to 29: here in this block of code, we are fetching all the student record using web API.
+
+Line # 37 to 48: here in this block of code, this method will render the html onto the DOM.
+
+Line # 40: here in this line, this renderStudentTable method will return the HTML table. And this table will display all the student record.
+
+See also  Microservices Communication using RabbitMQ in Asp.Net Core
+Line # 50 to 67: this block of code will responsible for deleting the student record.
+
+Line # 70 to 72: this block of code will responsible for editing the specific student record.
+
+Line 75 to 100: this block of code will return the HTML table to display all the student record with edit and delete method.
+
+Line # 104 to 110: here in this block, we are declaring a class which have the same properties as we have in the model class.
+
+Now, go to project folder structure and open AddNewStudent.tsx file and then write the code as you see in the below file.
+
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
+import { Link, NavLink } from 'react-router-dom';
+import { StudentListData } from './StudentList';
+
+interface AddStudentRecordState {
+    title: string;
+    loading: boolean;
+    studentList: StudentListData;
+}
+
+
+export class AddStudent extends React.Component<RouteComponentProps<{}>, AddStudentRecordState> {
+    constructor(props) {
+        super(props);
+
+        //here we are intializing the interface's fields with default values.
+        this.state = { title: "", loading: true,  studentList: new StudentListData };
+
+        //the studentid variable will get the student id from URL.
+        var studentid = this.props.match.params["studentid"];
+
+        //if studentid is greater than 0 then fetch method will get the specific student record and display it as in edit mode.
+        if (studentid > 0) {
+            fetch('api/Student/Details/' + studentid)
+                .then(response => response.json() as Promise<StudentListData>)
+                .then(data => {
+                    this.setState({ title: "Edit", loading: false, studentList: data });
+                });
+        }
+        else
+        {
+            this.state = { title: "Create", loading: false, studentList: new StudentListData };
+        }
+        
+        this.FuncSave = this.FuncSave.bind(this);
+        this.FuncCancel = this.FuncCancel.bind(this);
+    }
+    //this method will render html onto the DOM.
+    public render() {
+        let contents = this.state.loading
+            ? <p><em>Loading...</em></p>
+            : this.renderCreateForm();
+        return <div>
+            <h1>{this.state.title}</h1>
+            <h3>Student</h3>
+            <hr />
+            {contents}
+        </div>;
+    }
+
+
+
+    //this method will save the record into database. If the URL has an StudentId, 
+    //then it will update the record and if the URL has not student Id parameter than it will save the record.
+    private FuncSave(event) {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        // PUT request for Edit employee.  
+        if (this.state.studentList.studentId) {
+            fetch('api/Student/Edit', {
+                method: 'PUT',
+                body: data,
+            }).then((response) => response.json())
+                .then((responseJson) => {
+                    this.props.history.push("/studentList");
+                })
+        } 
+        else
+        {
+            fetch('api/Student/Create', {
+                method: 'POST',
+                body: data,
+            }).then((response) => response.json())
+                .then((responseJson) => {
+                    this.props.history.push("/studentList");
+                })
+        }
+    }
+
+    
+    private FuncCancel(e: any) {
+        e.preventDefault();
+        this.props.history.push("/studentList");
+    }
+
+    //this method will return the html table to display all the student record with edit and delete methods.
+    private renderCreateForm() {
+        return (
+            <form onSubmit={this.FuncSave} >
+                <div className="form-group row" >
+                    <input type="hidden" name="StudentId" value={this.state.studentList.studentId} />
+                </div>
+                < div className="form-group row" >
+                    <label className=" control-label col-md-12" htmlFor="name">Name</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="Name" defaultValue={this.state.studentList.name} required />
+                    </div>
+                </div >
+
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="address" >Address</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="Address" defaultValue={this.state.studentList.address } required />
+                    </div>
+                </div>
+
+
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="Country" >Country</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="Country" defaultValue={this.state.studentList.country} required />
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-md-12" htmlFor="PhoneNo" >Phone No</label>
+                    <div className="col-md-4">
+                        <input className="form-control" type="text" name="PhoneNo" defaultValue={this.state.studentList.phoneNo} required />
+                    </div>
+                </div>
+                
+                <div className="form-group">
+                    <button type="submit" className="btn btn-default">Save</button>
+                    <button className="btn" onClick={this.FuncCancel}>Cancel</button>
+                </div >
+            </form >
+        )
+    }
+}
+view rawAddNewRecord Component - CRUD react with Asp Net Core hosted with ❤ by GitHub
+Step # 9: How to define Route?
+In this step, we will define the Route. So, go to project folder structure and then open routes.tsx file and then write the code as you see in the below file.
+
+import * as React from 'react';
+import { Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { Home } from './components/Home';
+import { StudentList } from './components/StudentList';
+import { AddStudent } from './components/AddNewStudent';
+
+export const routes = <Layout>
+    <Route exact path='/' component={Home} />
+    <Route path='/studentList' component={StudentList} />  
+    <Route path='/addStudent' component={AddStudent} />
+    <Route path='/student/edit/:studentid' component={AddStudent} />
+</Layout>;
+view rawRoutes.tsx - CRUD react with Asp Net Core hosted with ❤ by GitHub
+Step # 10: How to add Navigation Menu?
+In this step, we will add navigation menu. So, go to project folder structure and then open NavMenu.tsx file and then write the code as you see in the below file.
+
+import * as React from 'react';
+import { Link, NavLink } from 'react-router-dom';
+
+export class NavMenu extends React.Component<{}, {}> {
+    public render() {
+        return <div className='main-nav'>
+                <div className='navbar navbar-inverse'>
+                <div className='navbar-header'>
+                    <button type='button' className='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse'>
+                        <span className='sr-only'>Toggle navigation</span>
+                        <span className='icon-bar'></span>
+                        <span className='icon-bar'></span>
+                        <span className='icon-bar'></span>
+                    </button>
+                    <Link className='navbar-brand' to={ '/' }>CrudWithReactAspNetCore</Link>
+                </div>
+                <div className='clearfix'></div>
+                <div className='navbar-collapse collapse'>
+                    <ul className='nav navbar-nav'>
+                        <li>
+                            <NavLink to={'/'} exact activeClassName='active'>
+                                <span className='glyphicon glyphicon-home'></span> Home
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={'/studentList'} activeClassName='active'>
+                                <span className='glyphicon glyphicon-th-list'></span> Student List
+                            </NavLink>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+        </div>;
+    }
+}
+view rawNavMenu.tsx file - CRUD react with asp net core hosted with ❤ by GitHub
+Step # 11: Run your project
+Now, press f5 to run your project. And then you will see the output as you see in the below output page.

@@ -1,0 +1,1069 @@
+React - Пример CRUD с формой крючка React
+Пример, построенный с помощью React 16.13.1 и React Hook Form 6.9.2
+
+Доступны другие версии:
+
+Реакция: Формак
+Угловой: Угловой 11, 10
+Следующая.js: Следующая.js 10
+Из этого туториала Вы узнаете, как создать базовое приложение React CRUD с помощью библиотеки React Hook Form, включающей страницы для перечисления, добавления, редактирования и удаления записей из JSON API. Записи в примере приложения являются записями пользователей, но один и тот же шаблон CRUD и структура кода могут использоваться для управления любым типом данных, например, продуктами, услугами, статьями и т. Д.
+
+Поддельный серверный API с маршрутами CRUD
+Пример приложения запускается с поддельным серверным API по умолчанию, чтобы его можно было полностью запускать в браузере без реального API (без бэкэнда), поддельный API содержит маршруты для пользовательских операций CRUD (Create, Read, Update, Delete) и использует локальное хранилище браузера для сохранения данных. Чтобы отключить поддельный бэкэнд, вам просто нужно удалить пару строк кода из корневого файла index.jsx, вы можете создать свой собственный API или подключить его к API .NET CRUD (инструкции ниже).
+
+Библиотека форм React Hook
+React Hook Form - относительно новая библиотека для работы с формами в React с использованием React Hooks, я только что наткнулся на нее недавно и буду использовать ее для своих проектов React в будущем, я думаю, что она проще в использовании, чем другие доступные варианты, и требует меньше кода. Для получения дополнительной информации см. https://react-hook-form.com.
+
+Пример обзора приложения CRUD
+Пример приложения включает в себя базовую домашнюю страницу и раздел пользователей с функциональностью CRUD, страница по умолчанию в разделе «Пользователи» отображает список всех пользователей и включает кнопки для добавления, редактирования и удаления пользователей. Кнопки добавления и редактирования переходят на страницу, содержащую форму React Hook Form для создания или обновления записи пользователя, а кнопка удаления выполняет функцию в компоненте списка пользователей для удаления записи пользователя. Формы добавления и редактирования реализованы с одним и тем же компонентом добавления/редактирования, который ведет себя по-разному в зависимости от того, в каком режиме он находится («режим добавления» или «режим редактирования»).
+
+Пример проекта доступен на GitHub по адресу https://github.com/cornflourblue/react-hook-form-crud-example.
+
+Вот он в действии: (См. на StackBlitz в https://stackblitz.com/edit/react-hook-form-crud-example)
+
+История обновлений:
+
+22 ноя 2021 - Загружен совместимый Node.js + SQL API
+22 ноября 2021 г. - Обновлено с Webpack 4 до 5 для исправления предупреждений аудита npm
+28 сентября 2021 - Добавлен совместимый CRUD API, построенный с помощью .NET 5.0
+09 Oct 2020 - Встроенный учебник с React 16.13.1 и React Hook Form 6.9.2
+
+Локальный запуск примера React CRUD
+Установка Node и npm с https://nodejs.org
+Загрузите или клонируйте исходный код проекта с https://github.com/cornflourblue/react-hook-form-crud-example
+Установите все необходимые пакеты npm, запустив их из командной строки в корневой папке проекта (где находится файл package.json).npm install
+Запустите приложение, запустив из командной строки в корневой папке проекта, это запустит браузер, отображающий приложение.npm start
+Дополнительные сведения о настройке локальной среды разработки React см. в разделе React - Setup Development Environment.
+
+
+Запуск приложения React CRUD с помощью Node.js + MySQL API
+Для получения полной информации о примере Node.js + MySQL API см. учебник Node.js + MySQL - CRUD API Пример и учебник. Но чтобы быстро приступить к работе, просто следуйте приведенным ниже шагам.
+
+Установите Сервер совместной работы MySQL с https://dev.mysql.com/downloads/mysql/ и убедитесь, что он запущен. Инструкции по установке доступны по https://dev.mysql.com/doc/refman/8.0/en/installing.html.
+Скачайте или клонируйте исходный код проекта с https://github.com/cornflourblue/node-mysql-crud-api
+Установите все необходимые пакеты npm, выполнив команду или из командной строки в корневой папке проекта (где находится файл package.json).npm installnpm i
+Обновите учетные данные базы данных для подключения к экземпляру сервера MySQL./config.json
+Запустите API, запустив из командной строки в корневую папку проекта, вы должны увидеть сообщение .npm startServer listening on port 4000
+Вернитесь в пример приложения React, удалите или закомментируйте 2 строки под комментарием, расположенным в файле, затем запустите приложение React, и теперь оно должно быть подключено к Node + MySQL API.// setup fake backend/src/index.jsx
+
+Запуск приложения React CRUD с помощью API .NET
+Подробные сведения о примере API .NET см. в учебнике .NET 5.0 - Пример и учебник ПО CRUD API. Но чтобы быстро приступить к работе, просто следуйте приведенным ниже шагам.
+
+Установите пакет SDK для .NET из https://dotnet.microsoft.com/download.
+Загрузите или клонируйте исходный код проекта с https://github.com/cornflourblue/dotnet-5-crud-api
+Запустите API, запустив из командной строки в корневую папку проекта (где находится файл WebApi.csproj), вы должны увидеть сообщение .dotnet runNow listening on: http://localhost:4000
+Вернитесь в пример приложения React, удалите или закомментируйте 2 строки под комментарием, расположенным в файле, затем запустите приложение React, и теперь оно должно быть подключено к API .NET.// setup fake backend/src/index.jsx
+
+Структура проекта
+Весь исходный код приложения React CRUD находится в папке. Внутри папки src есть папка для каждого компонента (приложение, дом, пользователи), а также папки для кода, не относящегося к функциям, которые могут совместно использоваться различными частями приложения (_components, _helpers, _services)./src
+
+Я префиксировал нефункциональные папки с подчеркиванием, чтобы сгруппировать их вместе и облегчить различие между функциями и не-функциями, это также сохраняет структуру папок проекта неглубокой, поэтому быстро увидеть все с первого взгляда с верхнего уровня и перемещаться по проекту._
+
+Файлы в каждой нефункциональной папке повторно экспортируют все экспортируемые из папки, чтобы их можно было импортировать, используя только путь к папке вместо полного пути к каждому файлу, и чтобы включить импорт нескольких модулей в одном импорте (например, ).index.jsimport { userService, alertService } from '@/_services'
+
+Я назвал корневой файл компонента в каждой папке компонента, чтобы его можно было импортировать, используя только путь к папке (например), устраняя необходимость в дополнительном файле, который повторно экспортирует компонент.Index.jsximport { App } from './app';index.js
+
+Нажмите на любую из приведенных ниже ссылок, чтобы перейти к описанию каждого файла вместе с его кодом:
+
+src
+_components
+Alert.jsx
+Nav.jsx
+индекс.js
+_helpers
+фейк-бэкэнд.js
+fetch-wrapper.js
+роль.js
+индекс.js
+_services
+алерт.сервис.js
+пользователь.сервис.js
+индекс.js
+приложение
+Индекс.jsx
+дом
+Индекс.jsx
+Пользователей
+ДобавитьПравить.jsx
+Индекс.jsx
+Список.jsx
+индекс.html
+индекс.jsx
+styles.less
+.babelrc
+пакет.json
+webpack.config.js
+
+Компонент оповещения
+Путь: /src/_components/Alert.jsx
+Компонент оповещения управляет добавлением и удалением предупреждений начальной загрузки в пользовательском интерфейсе, он поддерживает массив, который отображается в шаблоне, возвращаемом компонентом функции React Hooks.alerts
+
+Перехватчик используется для подписки на наблюдаемое, возвращаемое методом, это позволяет уведомлять компонент оповещения всякий раз, когда в службу оповещений отправляется предупреждающее сообщение, и добавлять его в массив для отображения. Отправка оповещения с пустым сообщением в службу оповещений указывает компоненту оповещения очистить массив оповещений. Хук также используется для регистрации прослушивателя изменения маршрута путем вызова, который автоматически очищает оповещения об изменениях маршрута.useEffect()alertService.onAlert()alertsuseEffect()history.listen()
+
+Пустой массив зависимостей, передаваемый в качестве второго параметра хуку, приводит к тому, что обработчик react запускается только один раз при подключении компонента, аналогично методу в традиционном компоненте класса react. Функция, возвращаемая из хука, очищает подписки при размонтировании компонента, аналогично методу в традиционном компоненте класса react.[]useEffect()componentDidMount()useEffect()componentWillUnmount()
+
+Функция удаляет указанный объект из массива, позволяет закрывать отдельные оповещения в пользовательском интерфейсе.removeAlert()alert
+
+Функция возвращает соответствующий класс оповещения начальной загрузки для каждого из типов оповещений, если вы используете что-то, отличное от начальной загрузки, вы можете изменить возвращаемые классы CSS в соответствии с вашим приложением.cssClasses()
+
+Возвращенный шаблон JSX отображает предупреждение начальной загрузки для каждого оповещения в массиве оповещений.
+
+Для получения дополнительной информации см. React Hooks + Bootstrap - Оповещения.
+
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
+import { alertService, AlertType } from '../_services';
+
+const propTypes = {
+    id: PropTypes.string,
+    fade: PropTypes.bool
+};
+
+const defaultProps = {
+    id: 'default-alert',
+    fade: true
+};
+
+function Alert({ id, fade }) {
+    const history = useHistory();
+    const [alerts, setAlerts] = useState([]);
+
+    useEffect(() => {
+        // subscribe to new alert notifications
+        const subscription = alertService.onAlert(id)
+            .subscribe(alert => {
+                // clear alerts when an empty alert is received
+                if (!alert.message) {
+                    setAlerts(alerts => {
+                        // filter out alerts without 'keepAfterRouteChange' flag
+                        const filteredAlerts = alerts.filter(x => x.keepAfterRouteChange);
+
+                        // remove 'keepAfterRouteChange' flag on the rest
+                        filteredAlerts.forEach(x => delete x.keepAfterRouteChange);
+                        return filteredAlerts;
+                    });
+                } else {
+                    // add alert to array
+                    setAlerts(alerts => ([...alerts, alert]));
+
+                    // auto close alert if required
+                    if (alert.autoClose) {
+                        setTimeout(() => removeAlert(alert), 3000);
+                    }
+                }
+            });
+
+        // clear alerts on location change
+        const historyUnlisten = history.listen(({ pathname }) => {
+            // don't clear if pathname has trailing slash because this will be auto redirected again
+            if (pathname.endsWith('/')) return;
+
+            alertService.clear(id);
+        });
+
+        // clean up function that runs when the component unmounts
+        return () => {
+            // unsubscribe & unlisten to avoid memory leaks
+            subscription.unsubscribe();
+            historyUnlisten();
+        };
+    }, []);
+
+    function removeAlert(alert) {
+        if (fade) {
+            // fade out alert
+            const alertWithFade = { ...alert, fade: true };
+            setAlerts(alerts => alerts.map(x => x === alert ? alertWithFade : x));
+
+            // remove alert after faded out
+            setTimeout(() => {
+                setAlerts(alerts => alerts.filter(x => x !== alertWithFade));
+            }, 250);
+        } else {
+            // remove alert
+            setAlerts(alerts => alerts.filter(x => x !== alert));
+        }
+    }
+
+    function cssClasses(alert) {
+        if (!alert) return;
+
+        const classes = ['alert', 'alert-dismissable'];
+                
+        const alertTypeClass = {
+            [AlertType.Success]: 'alert alert-success',
+            [AlertType.Error]: 'alert alert-danger',
+            [AlertType.Info]: 'alert alert-info',
+            [AlertType.Warning]: 'alert alert-warning'
+        }
+
+        classes.push(alertTypeClass[alert.type]);
+
+        if (alert.fade) {
+            classes.push('fade');
+        }
+
+        return classes.join(' ');
+    }
+
+    if (!alerts.length) return null;
+
+    return (
+        <div className="container">
+            <div className="m-3">
+                {alerts.map((alert, index) =>
+                    <div key={index} className={cssClasses(alert)}>
+                        <a className="close" onClick={() => removeAlert(alert)}>&times;</a>
+                        <span dangerouslySetInnerHTML={{__html: alert.message}}></span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+Alert.propTypes = propTypes;
+Alert.defaultProps = defaultProps;
+export { Alert };
+Наверх
+
+Компонент навигации
+Путь: /src/_components/Nav.jsx
+Компонент навигации отображает основную навигацию в примере. Компонент маршрутизатора react автоматически добавляет класс в активный элемент навигации, чтобы он выделялся в пользовательском интерфейсе.NavLinkactive
+
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+
+function Nav() {
+    return (
+        <nav className="navbar navbar-expand navbar-dark bg-dark">
+            <div className="navbar-nav">
+                <NavLink exact to="/" className="nav-item nav-link">Home</NavLink>
+                <NavLink to="/users" className="nav-item nav-link">Users</NavLink>
+            </div>
+        </nav>
+    );
+}
+
+export { Nav };
+Наверх
+
+Поддельный бэкэнд
+Путь: /src/_helpers/поддельный бэкэнд.js
+Поддельный бэкэнд включается путем выполнения приведенной ниже функции, которую обезьяна исправляет для создания пользовательской функции выборки.configureFakeBackend()fetch()
+
+Новая пользовательская функция выборки возвращает javascript, который разрешается после задержки в полсекунды для имитации реального вызова API. Поддельный бэкэнд организован в функцию верхнего уровня, которая проверяет URL-адрес запроса и метод, чтобы определить, как должен обрабатываться запрос. Для перехваченных маршрутов вызывается один из следующих, для всех остальных маршрутов запрос передается в реальный бэкэнд через функцию, которая указывает на исходную функцию. Под функциями маршрута есть несколько для возврата различных типов ответа и выполнения небольших задач.PromisehandleRoute()// route functionsrealFetch()window.fetch// helper functions
+
+Дополнительные сведения см. в разделе React + Fetch - Пример поддельного бэкэнда для backend-разработки.
+
+import { Role } from './'
+
+export function configureFakeBackend() {
+    // array in local storage for user records
+    let users = JSON.parse(localStorage.getItem('users')) || [{ 
+        id: 1,
+        title: 'Mr',
+        firstName: 'Joe',
+        lastName: 'Bloggs',
+        email: 'joe@bloggs.com',
+        role: Role.User,
+        password: 'joe123'
+    }];
+
+    // monkey patch fetch to setup fake backend
+    let realFetch = window.fetch;
+    window.fetch = function (url, opts) {
+        return new Promise((resolve, reject) => {
+            // wrap in timeout to simulate server api call
+            setTimeout(handleRoute, 500);
+
+            function handleRoute() {
+                const { method } = opts;
+                switch (true) {
+                    case url.endsWith('/users') && method === 'GET':
+                        return getUsers();
+                    case url.match(/\/users\/\d+$/) && method === 'GET':
+                        return getUserById();
+                    case url.endsWith('/users') && method === 'POST':
+                        return createUser();
+                    case url.match(/\/users\/\d+$/) && method === 'PUT':
+                        return updateUser();
+                    case url.match(/\/users\/\d+$/) && method === 'DELETE':
+                        return deleteUser();
+                    default:
+                        // pass through any requests not handled above
+                        return realFetch(url, opts)
+                            .then(response => resolve(response))
+                            .catch(error => reject(error));
+                }
+            }
+
+            // route functions
+
+            function getUsers() {
+                return ok(users);
+            }
+
+            function getUserById() {
+                let user = users.find(x => x.id === idFromUrl());
+                return ok(user);
+            }
+    
+            function createUser() {
+                const user = body();
+
+                if (users.find(x => x.email === user.email)) {
+                    return error(`User with the email ${user.email} already exists`);
+                }
+
+                // assign user id and a few other properties then save
+                user.id = newUserId();
+                user.dateCreated = new Date().toISOString();
+                delete user.confirmPassword;
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                return ok();
+            }
+    
+            function updateUser() {
+                let params = body();
+                let user = users.find(x => x.id === idFromUrl());
+
+                // only update password if included
+                if (!params.password) {
+                    delete params.password;
+                }
+                // don't save confirm password
+                delete params.confirmPassword;
+
+                // update and save user
+                Object.assign(user, params);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                return ok();
+            }
+    
+            function deleteUser() {
+                users = users.filter(x => x.id !== idFromUrl());
+                localStorage.setItem('users', JSON.stringify(users));
+
+                return ok();
+            }
+    
+            // helper functions
+
+            function ok(body) {
+                resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(body)) });
+            }
+
+            function error(message) {
+                resolve({ status: 400, text: () => Promise.resolve(JSON.stringify({ message })) });
+            }
+
+            function idFromUrl() {
+                const urlParts = url.split('/');
+                return parseInt(urlParts[urlParts.length - 1]);
+            }
+
+            function body() {
+                return opts.body && JSON.parse(opts.body);    
+            }
+
+            function newUserId() {
+                return users.length ? Math.max(...users.map(x => x.id)) + 1 : 1;
+            }
+        });
+    }
+};
+Наверх
+
+Обертка для выборки
+Путь: /src/_helpers/fetch-wrapper.js
+Оболочка выборки — это легкая оболочка вокруг собственной функции браузера, используемая для упрощения кода для выполнения HTTP-запросов. Он содержит методы для , и запросы, автоматически обрабатывает синтаксический анализ данных JSON из ответов и выдает ошибку, если HTTP-ответ не является успешным ().fetch()getpostputdelete!response.ok
+
+С помощью обертки выборки запрос может быть сделан так просто: . Он используется в примере приложения пользовательской службой.POSTfetchWrapper.post(url, body);
+
+export const fetchWrapper = {
+    get,
+    post,
+    put,
+    delete: _delete
+};
+
+function get(url) {
+    const requestOptions = {
+        method: 'GET'
+    };
+    return fetch(url, requestOptions).then(handleResponse);
+}
+
+function post(url, body) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    };
+    return fetch(url, requestOptions).then(handleResponse);
+}
+
+function put(url, body) {
+    const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    };
+    return fetch(url, requestOptions).then(handleResponse);    
+}
+
+// prefixed with underscored because delete is a reserved word in javascript
+function _delete(url) {
+    const requestOptions = {
+        method: 'DELETE'
+    };
+    return fetch(url, requestOptions).then(handleResponse);
+}
+
+// helper functions
+
+function handleResponse(response) {
+    return response.text().then(text => {
+        const data = text && JSON.parse(text);
+        
+        if (!response.ok) {
+            const error = (data && data.message) || response.statusText;
+            return Promise.reject(error);
+        }
+
+        return data;
+    });
+}
+Наверх
+
+Объект роли / Перечисление
+Путь: /src/_helpers/role.js
+Объект role определяет все роли в примере приложения, я создал его для использования в качестве перечисления, чтобы избежать передачи ролей в виде строк, поэтому вместо этого мы можем использовать .'Admin'Role.Admin
+
+export const Role = {
+    Admin: 'Admin',
+    User: 'User'    
+};
+Наверх
+
+Служба оповещения
+Путь: /src/_services/alert.service.js
+Служба оповещений действует как мост между любым компонентом в приложении React и компонентом оповещения, который фактически отображает уведомление об оповещении. Он содержит методы для отправки, очистки и подписки на оповещения.
+
+Объект определяет типы оповещений, разрешенных в приложении.AlertType
+
+Вы можете активировать оповещения от любого компонента приложения, вызвав один из удобных методов отображения различных типов оповещений: , и .success()error()info()warn()
+
+Параметры метода удобства оповещения
+Первым параметром является строка оповещения, которая может быть обычным текстом или HTMLmessage
+Второй параметр является необязательным объектом, поддерживающим булеву свойство и булеву свойство: optionsautoClosekeepAfterRouteChange
+autoClose - если значение true указывает компоненту оповещения автоматически закрыть оповещение через три секунды. Значение по умолчанию — .true
+keepAfterRouteChange - если значение true не позволяет закрыть оповещение после одного изменения маршрута, это удобно для отображения сообщений после перенаправления, например, при создании или обновлении нового пользователя. Значение по умолчанию — .false
+Для получения дополнительной информации см. React Hooks + Bootstrap - Оповещения.
+
+import { Subject } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+const alertSubject = new Subject();
+const defaultId = 'default-alert';
+
+export const alertService = {
+    onAlert,
+    success,
+    error,
+    info,
+    warn,
+    alert,
+    clear
+};
+
+export const AlertType = {
+    Success: 'Success',
+    Error: 'Error',
+    Info: 'Info',
+    Warning: 'Warning'
+};
+
+// enable subscribing to alerts observable
+function onAlert(id = defaultId) {
+    return alertSubject.asObservable().pipe(filter(x => x && x.id === id));
+}
+
+// convenience methods
+function success(message, options) {
+    alert({ ...options, type: AlertType.Success, message });
+}
+
+function error(message, options) {
+    alert({ ...options, type: AlertType.Error, message });
+}
+
+function info(message, options) {
+    alert({ ...options, type: AlertType.Info, message });
+}
+
+function warn(message, options) {
+    alert({ ...options, type: AlertType.Warning, message });
+}
+
+// core alert method
+function alert(alert) {
+    alert.id = alert.id || defaultId;
+    alert.autoClose = (alert.autoClose === undefined ? true : alert.autoClose);
+    alertSubject.next(alert);
+}
+
+// clear alerts
+function clear(id = defaultId) {
+    alertSubject.next({ id });
+}
+Наверх
+
+Обслуживание пользователей
+Путь: /src/_services/user.service.js
+Служба пользователей обрабатывает связь между приложением react и серверным API, она содержит стандартные методы CRUD для управления пользователями, которые делают соответствующие HTTP-запросы к конечной точке API путем вызова оболочки выборки./users
+
+import config from 'config';
+import { fetchWrapper } from '@/_helpers';
+
+const baseUrl = `${config.apiUrl}/users`;
+
+export const userService = {
+    getAll,
+    getById,
+    create,
+    update,
+    delete: _delete
+};
+
+function getAll() {
+    return fetchWrapper.get(baseUrl);
+}
+
+function getById(id) {
+    return fetchWrapper.get(`${baseUrl}/${id}`);
+}
+
+function create(params) {
+    return fetchWrapper.post(baseUrl, params);
+}
+
+function update(id, params) {
+    return fetchWrapper.put(`${baseUrl}/${id}`, params);
+}
+
+// prefixed with underscored because delete is a reserved word in javascript
+function _delete(id) {
+    return fetchWrapper.delete(`${baseUrl}/${id}`);
+}
+Наверх
+
+Компонент индекса приложений
+Путь: /src/app/Index.jsx
+Компонент является корневым компонентом примера приложения, он содержит внешний html, основную навигацию, глобальное оповещение и маршруты верхнего уровня для приложения.App
+
+В качестве соглашения я назвал файл корневого компонента в каждой папке компонента, чтобы его можно было импортировать, используя только путь к папке (), устраняя необходимость в дополнительном файле, который повторно экспортирует компонент приложения.Index.jsximport { App } from './app';index.js
+
+Первый маршрут (<Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />) автоматически удаляет конечные косые черты из URL-адресов, которые могут вызвать проблемы и являются побочным эффектом использования относительных ссылок маршрутизатора react. Дополнительные сведения см. в разделе React Router - Пример относительных ссылок.
+
+Последний маршрут (<Redirect from="*" to="/" />) является универсальным маршрутом перенаправления, который перенаправляет любые несопоставимые пути на домашнюю страницу.
+
+import React from 'react';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+
+import { Nav, Alert } from '@/_components';
+import { Home } from '@/home';
+import { Users } from '@/users';
+
+function App() {
+    const { pathname } = useLocation();  
+
+    return (
+        <div className="app-container bg-light">
+            <Nav />
+            <Alert />
+            <div className="container pt-4 pb-4">
+                <Switch>
+                    <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
+                    <Route exact path="/" component={Home} />
+                    <Route path="/users" component={Users} />
+                    <Redirect from="*" to="/" />
+                </Switch>
+            </div>
+        </div>
+    );
+}
+
+export { App };
+Наверх
+
+Компонент домашнего индекса
+Путь: /src/home/Index.jsx
+Компонент представляет собой базовый компонент функции react, который отображает некоторый HTML и ссылку на страницу пользователя.Home
+
+В качестве соглашения я назвал файл корневого компонента в каждой папке компонента, чтобы его можно было импортировать, используя только путь к папке (), устраняя необходимость в дополнительном файле, который повторно экспортирует компонент Home.Index.jsximport { Home } from '@/home';index.js
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+function Home() {
+    return (
+        <div>
+            <h1>React - CRUD Example with React Hook Form</h1>
+            <p>An example app showing how to list, add, edit and delete user records with React and the React Hook Form library.</p>
+            <p><Link to="users">&gt;&gt; Manage Users</Link></p>
+        </div>
+    );
+}
+
+export { Home };
+Наверх
+
+Пользователи Добавляют/редактируют компонент
+Путь: /src/users/AddEdit.jsx
+Компонент users используется как для добавления, так и для редактирования пользователей, он содержит форму, построенную с помощью библиотеки React Hook Form.AddEdit
+
+Правила проверки форм определяются с помощью библиотеки проверки схемы Yup и передаются в функцию React Hook Form, дополнительные сведения о Yup см. в разделе https://github.com/jquense/yup.useForm()
+
+Функция hook возвращает объект с методами для работы с формой, включая регистрацию входных данных, обработку отправки формы, сброс формы, установку входных значений, отображение ошибок и многое другое, полный список см. https://react-hook-form.com/api#useForm.useForm()
+
+Функция вызывается при отправке и допустимости формы и либо создает, либо обновляет пользователя в зависимости от того, в каком режиме он находится.onSubmit
+
+Форма находится в "режиме добавления", когда нет параметра user id (), в противном случае она находится в "режиме редактирования". Переменная используется для изменения поведения формы в зависимости от режима, в котором она находится, например, в «режиме добавления» требуется поле пароля, а в «режиме редактирования» () вызывается служба пользователя для получения сведений о пользователе и установки значений полей.match.params.idisAddMode!isAddMode
+
+Возвращенный шаблон JSX содержит форму со всеми полями ввода и сообщениями проверки. Поля формы регистрируются в react Hook Form с помощью атрибута, который регистрирует каждый вход с вводом . Дополнительные сведения о проверке формы с помощью React Hook Form см. в разделе React - Пример проверки формы с формой React Hook.ref={register}name
+
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+
+import { userService, alertService } from '@/_services';
+
+function AddEdit({ history, match }) {
+    const { id } = match.params;
+    const isAddMode = !id;
+    
+    // form validation rules 
+    const validationSchema = Yup.object().shape({
+        title: Yup.string()
+            .required('Title is required'),
+        firstName: Yup.string()
+            .required('First Name is required'),
+        lastName: Yup.string()
+            .required('Last Name is required'),
+        email: Yup.string()
+            .email('Email is invalid')
+            .required('Email is required'),
+        role: Yup.string()
+            .required('Role is required'),
+        password: Yup.string()
+            .transform(x => x === '' ? undefined : x)
+            .concat(isAddMode ? Yup.string().required('Password is required') : null)
+            .min(6, 'Password must be at least 6 characters'),
+        confirmPassword: Yup.string()
+            .transform(x => x === '' ? undefined : x)
+            .when('password', (password, schema) => {
+                if (password || isAddMode) return schema.required('Confirm Password is required');
+            })
+            .oneOf([Yup.ref('password')], 'Passwords must match')
+    });
+
+    // functions to build form returned by useForm() hook
+    const { register, handleSubmit, reset, setValue, errors, formState } = useForm({
+        resolver: yupResolver(validationSchema)
+    });
+
+    function onSubmit(data) {
+        return isAddMode
+            ? createUser(data)
+            : updateUser(id, data);
+    }
+
+    function createUser(data) {
+        return userService.create(data)
+            .then(() => {
+                alertService.success('User added', { keepAfterRouteChange: true });
+                history.push('.');
+            })
+            .catch(alertService.error);
+    }
+
+    function updateUser(id, data) {
+        return userService.update(id, data)
+            .then(() => {
+                alertService.success('User updated', { keepAfterRouteChange: true });
+                history.push('..');
+            })
+            .catch(alertService.error);
+    }
+
+    useEffect(() => {
+        if (!isAddMode) {
+            // get user and set form fields
+            userService.getById(id).then(user => {
+                const fields = ['title', 'firstName', 'lastName', 'email', 'role'];
+                fields.forEach(field => setValue(field, user[field]));
+            });
+        }
+    }, []);
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} onReset={reset}>
+            <h1>{isAddMode ? 'Add User' : 'Edit User'}</h1>
+            <div className="form-row">
+                <div className="form-group col">
+                    <label>Title</label>
+                    <select name="title" ref={register} className={`form-control ${errors.title ? 'is-invalid' : ''}`}>
+                        <option value=""></option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Miss">Miss</option>
+                        <option value="Ms">Ms</option>
+                    </select>
+                    <div className="invalid-feedback">{errors.title?.message}</div>
+                </div>
+                <div className="form-group col-5">
+                    <label>First Name</label>
+                    <input name="firstName" type="text" ref={register} className={`form-control ${errors.firstName ? 'is-invalid' : ''}`} />
+                    <div className="invalid-feedback">{errors.firstName?.message}</div>
+                </div>
+                <div className="form-group col-5">
+                    <label>Last Name</label>
+                    <input name="lastName" type="text" ref={register} className={`form-control ${errors.lastName ? 'is-invalid' : ''}`} />
+                    <div className="invalid-feedback">{errors.lastName?.message}</div>
+                </div>
+            </div>
+            <div className="form-row">
+                <div className="form-group col-7">
+                    <label>Email</label>
+                    <input name="email" type="text" ref={register} className={`form-control ${errors.email ? 'is-invalid' : ''}`} />
+                    <div className="invalid-feedback">{errors.email?.message}</div>
+                </div>
+                <div className="form-group col">
+                    <label>Role</label>
+                    <select name="role" ref={register} className={`form-control ${errors.role ? 'is-invalid' : ''}`}>
+                        <option value=""></option>
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <div className="invalid-feedback">{errors.role?.message}</div>
+                </div>
+            </div>
+            {!isAddMode &&
+                <div>
+                    <h3 className="pt-3">Change Password</h3>
+                    <p>Leave blank to keep the same password</p>
+                </div>
+            }
+            <div className="form-row">
+                <div className="form-group col">
+                    <label>Password</label>
+                    <input name="password" type="password" ref={register} className={`form-control ${errors.password ? 'is-invalid' : ''}`} />
+                    <div className="invalid-feedback">{errors.password?.message}</div>
+                </div>
+                <div className="form-group col">
+                    <label>Confirm Password</label>
+                    <input name="confirmPassword" type="password" ref={register} className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`} />
+                    <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
+                </div>
+            </div>
+            <div className="form-group">
+                <button type="submit" disabled={formState.isSubmitting} className="btn btn-primary">
+                    {formState.isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
+                    Save
+                </button>
+                <Link to={isAddMode ? '.' : '..'} className="btn btn-link">Cancel</Link>
+            </div>
+        </form>
+    );
+}
+
+export { AddEdit };
+Наверх
+
+Компонент индекса пользователей
+Путь: /src/users/Index.jsx
+Компонент является корневым компонентом раздела пользователей / функции, он определяет маршруты для каждой из страниц в разделе пользователей.Users
+
+Первый маршрут совпадает с путем корневых пользователей (), что делает его маршрутом по умолчанию для этого раздела, поэтому по умолчанию отображается компонент users. Второй и третий маршруты предназначены для добавления и редактирования пользователей, они соответствуют разным маршрутам, но оба загружают один и тот же компонент (), компонент изменяет свое поведение в зависимости от маршрута./usersListAddEdit
+
+В соответствии с соглашением я назвал файл корневого компонента в каждой папке компонента, чтобы его можно было импортировать, используя только путь к папке (), устраняя необходимость в дополнительном файле, который повторно экспортирует компонент Users.Index.jsximport { Users } from '@/users';index.js
+
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+
+import { List } from './List';
+import { AddEdit } from './AddEdit';
+
+function Users({ match }) {
+    const { path } = match;
+    
+    return (
+        <Switch>
+            <Route exact path={path} component={List} />
+            <Route path={`${path}/add`} component={AddEdit} />
+            <Route path={`${path}/edit/:id`} component={AddEdit} />
+        </Switch>
+    );
+}
+
+export { Users };
+Наверх
+
+Компонент списка пользователей
+Путь: /src/users/List.jsx
+Компонент пользователи отображает список всех пользователей и содержит кнопки для добавления, редактирования и удаления пользователей. Хук используется для получения всех пользователей из службы пользователей и сохранения их в локальном состоянии путем вызова .ListuseEffectsetUsers()
+
+Кнопка удаления вызывает функцию, которая сначала обновляет локальное состояние пользователя со свойством, поэтому пользовательский интерфейс отображает спиннер на кнопке удаления, затем вызывает удаление пользователя, а затем удаляет удаленного пользователя из локального состояния, чтобы он был удален из пользовательского интерфейса.deleteUser()isDeleting = trueuserService.delete()
+
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import { userService } from '@/_services';
+
+function List({ match }) {
+    const { path } = match;
+    const [users, setUsers] = useState(null);
+
+    useEffect(() => {
+        userService.getAll().then(x => setUsers(x));
+    }, []);
+
+    function deleteUser(id) {
+        setUsers(users.map(x => {
+            if (x.id === id) { x.isDeleting = true; }
+            return x;
+        }));
+        userService.delete(id).then(() => {
+            setUsers(users => users.filter(x => x.id !== id));
+        });
+    }
+
+    return (
+        <div>
+            <h1>Users</h1>
+            <Link to={`${path}/add`} className="btn btn-sm btn-success mb-2">Add User</Link>
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th style={{ width: '30%' }}>Name</th>
+                        <th style={{ width: '30%' }}>Email</th>
+                        <th style={{ width: '30%' }}>Role</th>
+                        <th style={{ width: '10%' }}></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users && users.map(user =>
+                        <tr key={user.id}>
+                            <td>{user.title} {user.firstName} {user.lastName}</td>
+                            <td>{user.email}</td>
+                            <td>{user.role}</td>
+                            <td style={{ whiteSpace: 'nowrap' }}>
+                                <Link to={`${path}/edit/${user.id}`} className="btn btn-sm btn-primary mr-1">Edit</Link>
+                                <button onClick={() => deleteUser(user.id)} className="btn btn-sm btn-danger btn-delete-user" disabled={user.isDeleting}>
+                                    {user.isDeleting 
+                                        ? <span className="spinner-border spinner-border-sm"></span>
+                                        : <span>Delete</span>
+                                    }
+                                </button>
+                            </td>
+                        </tr>
+                    )}
+                    {!users &&
+                        <tr>
+                            <td colSpan="4" className="text-center">
+                                <div className="spinner-border spinner-border-lg align-center"></div>
+                            </td>
+                        </tr>
+                    }
+                    {users && !users.length &&
+                        <tr>
+                            <td colSpan="4" className="text-center">
+                                <div className="p-2">No Users To Display</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export { List };
+Наверх
+
+HTML-файл базового индекса
+Путь: /src/index.html
+Html-файл базового индекса содержит внешний html-код для всего примера приложения react CRUD. Когда приложение запускается с , webpack объединяет весь код react в один файл javascript и вставляет его в тело этой страницы для загрузки браузером. Затем приложение react отображается в элементе основным файлом записи react ниже.npm start<div id="app"></div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="/" />
+    <title>React - CRUD Example with React Hook Form</title>
+
+    <!-- bootstrap css -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app"></div>
+</body>
+</html>
+Наверх
+
+Основной файл записи React
+Путь: /src/index.jsx
+Корневой файл index.jsx загружает приложение React Hook Form CRUD, визуализируя компонент (заключенный в реактивный маршрутизатор) в элемент div, определенный в html-файле базового индекса выше.AppBrowserRouterapp
+
+Шаблонное приложение использует поддельный / макет бэкэнда, который хранит данные в локальном хранилище браузера, чтобы отключить поддельный бэкэнд, просто удалите 2 строки кода под комментарием.// setup fake backend
+
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { render } from 'react-dom';
+
+import { App } from './App';
+
+import './styles.less';
+
+// setup fake backend
+import { configureFakeBackend } from './_helpers';
+configureFakeBackend();
+
+render(
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>,
+    document.getElementById('app')
+);
+Наверх
+
+Глобальные стили LESS/CSS
+Путь: /src/styles.less
+Файл styles.less содержит глобальные пользовательские стили LESS/CSS для примера приложения react. Для получения дополнительной информации см. React - Как добавить глобальные стили CSS / LESS в React с помощью webpack.
+
+// global styles
+a { cursor: pointer; }
+
+.app-container {
+    min-height: 350px;
+}
+
+.btn-delete-user {
+    width: 40px;
+    text-align: center;
+    box-sizing: content-box;
+}
+Наверх
+
+Файл Babel RC (команды выполнения)
+Путь: /.babelrc
+Файл конфигурации babel определяет пресеты, используемые babel для транспилирования кода React и ES6. Babel transpiler запускается webpack через модуль, настроенный в файле webpack.config.js ниже.babel-loader
+
+{
+    "presets": [
+        "@babel/preset-react",
+        "@babel/preset-env"
+    ]
+}
+Наверх
+
+Пакет.json
+Путь: /package.json
+Файл package.json содержит сведения о конфигурации проекта, включая зависимости пакетов, которые устанавливаются при запуске . Полная документация доступна на веб-сайте npm docs.npm install
+
+{
+    "name": "react-hook-form-crud-example",
+    "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cornflourblue/react-hook-form-crud-example.git"
+    },
+    "license": "MIT",
+    "scripts": {
+        "build": "webpack --mode production",
+        "start": "webpack-dev-server --open"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^1.0.0",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "react-hook-form": "^6.9.2",
+        "react-router-dom": "^5.1.2",
+        "rxjs": "^6.5.5",
+        "yup": "^0.29.3"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.3",
+        "@babel/preset-env": "^7.4.3",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.5",
+        "css-loader": "^4.3.0",
+        "html-webpack-plugin": "^4.5.0",
+        "less": "^3.11.0",
+        "less-loader": "^7.0.1",
+        "path": "^0.12.7",
+        "style-loader": "^1.1.3",
+        "webpack": "^5.64.2",
+        "webpack-cli": "^4.9.1",
+        "webpack-dev-server": "^4.5.0"
+    }
+}
+Наверх
+
+Конфигурация вебпака
+Путь: /webpack.config.js
+Webpack используется для компиляции и объединения всех файлов проекта, чтобы они были готовы к загрузке в браузер, он делает это с помощью загрузчиков и плагинов, которые настроены в файле webpack.config.js. Для получения дополнительной информации о webpack ознакомьтесь с документацией webpack.
+
+Файл конфигурации webpack также определяет глобальный объект конфигурации для приложения React CRUD с помощью этого свойства, его также можно использовать для определения различных переменных конфигурации для сред разработки и рабочей среды.externals
+
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+
+module.exports = {
+    mode: 'development',
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                loader: 'babel-loader'
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' },
+                    { loader: 'less-loader' }
+                ]
+            }
+        ]
+    },
+    resolve: {
+        mainFiles: ['index', 'Index'],
+        extensions: ['.js', '.jsx'],
+        alias: {
+            '@': path.resolve(__dirname, 'src/'),
+        }
+    },
+    plugins: [new HtmlWebpackPlugin({
+        template: './src/index.html'
+    })],
+    devServer: {
+        historyApiFallback: true
+    },
+    externals: {
+        // global app config object
+        config: JSON.stringify({
+            apiUrl: 'http://localhost:4000'
+        })
+    }
+}

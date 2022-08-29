@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-const CreateUser = ({onChangeForm, createUser }) => {
+const CreateUseer = ({onChangeForm, createUseer }) => {
     return(
         <div className="container">
             <div className="row">
@@ -15,7 +15,7 @@ const CreateUser = ({onChangeForm, createUser }) => {
                             <input type="text" onChange={(e) => onChangeForm(e)} className="form-control" name="lastname" id="lastname" placeholder="Last Name" />
                         </div>
                     </div>
-                    <button type="button" onClick= {(e) => createUser()} className="btn btn-danger">Create</button>
+                    <button type="button" onClick= {(e) => createUseer()} className="btn btn-danger">Create</button>
                 </form>
                 </div>
             </div>
@@ -23,4 +23,4 @@ const CreateUser = ({onChangeForm, createUser }) => {
     )
 }
 
-export default CreateUser
+export default CreateUseer

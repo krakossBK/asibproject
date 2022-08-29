@@ -11,29 +11,29 @@ using asibproject.Models;
 namespace asibproject.Controllers
 {
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UseersController : ControllerBase
     {
 
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<UseersController> _logger;
 
-        static readonly IUserRepository repository = new UserRepository();
+        static readonly IUseerRepository repository = new UseerRepository();
 
-        public UsersController(ILogger<UsersController> logger)
+        public UseersController(ILogger<UseersController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet]
-        [Route("api/users")]
-        public IEnumerable<UserModel> GetAllUsers()
+        [Route("api/useers")]
+        public IEnumerable<UseerModel> GetAlluseers()
         {
             return repository.GetAll();
         }
 
         [HttpPost]
-        [Route("api/user")]
+        [Route("api/useer")]
         [Consumes("application/json")]
-        public UserModel PostUser(UserModel item)
+        public UseerModel Postuseer(UseerModel item)
         {
             return repository.Add(item);
         }

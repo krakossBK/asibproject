@@ -3,31 +3,31 @@ using System.Collections.Generic;
 
 namespace asibproject.Models
 {
-    public class UserRepository : IUserRepository
+    public class UseerRepository : IUseerRepository
     {
-        private List<UserModel> users = new List<UserModel>();
+        private List<UseerModel> useers = new List<UseerModel>();
         private int _nextId = 1;
 
-        public UserRepository()
+        public UseerRepository()
         {
-            Add(new UserModel { firstName = "first1", lastName = "last1", email = "email1@gmail.com" });
-            Add(new UserModel { firstName = "first2", lastName = "last2", email = "email2@gmail.com" });
-            Add(new UserModel { firstName = "first3", lastName = "last3", email = "email3@gmail.com" });
+            Add(new UseerModel { firstName = "first1", lastName = "last1", email = "email1@gmail.com" });
+            Add(new UseerModel { firstName = "first2", lastName = "last2", email = "email2@gmail.com" });
+            Add(new UseerModel { firstName = "first3", lastName = "last3", email = "email3@gmail.com" });
         }
 
-        public IEnumerable<UserModel> GetAll()
+        public IEnumerable<UseerModel> GetAll()
         {
-            return users;
+            return useers;
         }
 
-        public UserModel Add(UserModel item)
+        public UseerModel Add(UseerModel item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
             item.Id = _nextId++;
-            users.Add(item);
+            useers.Add(item);
             return item;
         }
     }
