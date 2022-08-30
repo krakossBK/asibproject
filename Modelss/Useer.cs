@@ -1,4 +1,4 @@
-namespace asibproject.Models
+namespace asibproject.Modelss
 {
     public class UseerModel
     {

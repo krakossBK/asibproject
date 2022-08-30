@@ -2,13 +2,13 @@ import React from 'react'
 
 export const Useers = ({useers}) => {
 
-    console.log('useers length:::', useers.length)
+    //console.log('useers length:::', useers.length);
     if (useers.length === 0) return null
+    
 
     const UseerRow = (useer,index) => {
-
-        return(
-              <tr key = {index} className={index%2 === 0?'odd':'even'}>
+        return (
+            <tr key={useer.id} className={index % 2 === 0 ? 'odd' : 'even'} name={useer.id}>
                   <td>{index + 1}</td>
                   <td>{useer.firstName}</td>
                   <td>{useer.lastName}</td>
@@ -17,7 +17,7 @@ export const Useers = ({useers}) => {
           )
     }
 
-    const UseerTable = useers.map((useer,index) => UseerRow(useer,index))
+    const UseerTable = useers.map((useer, index) => UseerRow(useer,index))
 
     return(
         <div className="container">

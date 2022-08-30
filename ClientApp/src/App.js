@@ -27,28 +27,15 @@ class App extends Component {
             createUseer(this.state.useer)
                 .then(response => {
                     console.log(response);
-                    this.setState({ numberOfuseers: this.state.numberOfuseers + 1, shows: response, loading: true, error: "" })
+                    this.setState({ numberOfUseers: this.state.numberOfUseers + 1 })
                 });
         }
 
     }
-    /*
-     *
-     * // add ProtoTypes Article
-
-        Article.propTypes = {
-            data: PropTypes.shape({
-                author: PropTypes.string.isRequired,
-                text: PropTypes.string.isRequired
-            })
-        }
-     * 
-     * */
     getAllUseers = () => {
         getAllUseers()
             .then(useers => {
-               /* console.log(useers)*/
-                this.setState({ useers: useers, numberOfuseers: useers.length, shows: useers, loading: true, error: ""  })
+                this.setState({ useers: useers, numberOfUseers: useers.length })
             });
     }
 
@@ -85,7 +72,7 @@ class App extends Component {
                         </div>
                         <div className="col-md-4">
                             <DisplayBoard
-                                numberOfuseers={this.state.numberOfuseers}
+                                numberOfUseers={this.state.numberOfUseers}
                                 getAllUseers={this.getAllUseers}
                             >
                             </DisplayBoard>

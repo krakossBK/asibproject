@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace asibproject.Models
+namespace asibproject.Modelss
 {
     public class UseerRepository : IUseerRepository
     {

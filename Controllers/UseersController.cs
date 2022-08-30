@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using asibproject.Models;
+using asibproject.Modelss;
 
 namespace asibproject.Controllers
 {
@@ -37,7 +37,5 @@ namespace asibproject.Controllers
         {
             return repository.Add(item);
         }
-        
-
     }
 }

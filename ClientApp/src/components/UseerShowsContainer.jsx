@@ -30,14 +30,14 @@ export default class useerShowsContainer extends React.Component {
             .catch((error) =>
                 this.setState({ loading: false, error: error.message || error })
         );
-        console.log('componentDidMount() => ' + this.state.shows)
+        //console.log('componentDidMount() => ' + this.state.shows)
    }
 
    
 
 
     render() {
-        console.table('render() this.state => ', this.state.shows);
+       // console.table('render() this.state => ', this.state.shows);
 
 
         const { loading, error, shows } = this.state;
